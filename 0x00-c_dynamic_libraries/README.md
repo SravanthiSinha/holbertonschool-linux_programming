@@ -8,7 +8,6 @@ Files :libholberton.so, holberton.h
 
 ```
 $ls -la lib*
--rwxrwxr-x 1 hybridivy hybridivy 21808 Jun  6 17:29 liball.so
 -rwxrwxr-x 1 hybridivy hybridivy 21808 Jun  6 17:03 libholberton.so
 $nm -D libholberton.so
 0000000000000ae5 T _abs
