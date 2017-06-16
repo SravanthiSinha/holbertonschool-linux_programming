@@ -1,13 +1,14 @@
 CC 	= 	gcc-4.8
 CFLAGS 	= 	-Wall -Werror -Wextra -pedantic
-
-_SRC 	= 				main.c execute.c hashtable_io.c filelist_io.c
+CFLAGS 	=
+_SRC 	= 				main.c list.c list_utils.c utils.c print_files.c	dirwalk.c\
+								direntry.c direntry_utils.c print_error.c  sort_direntry.c sort_list.c
 SRC 	= 	$(patsubst %,$(SDIR)/%,$(_SRC))
 
 _OBJ 	= 	$(_SRC:.c=.o)
 OBJECTS 	= 	$(patsubst %,$(ODIR)/%,$(_OBJ))
 
-_DEPS 	= 	hls.h hashtable.h filelist.h
+_DEPS 	= 	hls.h list.h direntry.h
 DEPS 	= 	$(patsubst %,$(IDIR)/%,$(_DEPS))
 
 IDIR 	= 	./inc
