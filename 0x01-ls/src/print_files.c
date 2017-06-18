@@ -8,33 +8,33 @@
  *
  * Return: 1 if list of files are printed else 0
  */
-int print_files(char *options, Direntry **dirent, List **dirnames)
+int print_files(Options *options, Direntry **dirent, List **dirnames)
 {
-	Direntry *node = NULL;
+	Direntry *node = *dirent;
 	char *filename;
 	int a = 0;
-	char delimeter[2];
+	int hidden_file;
 
-	node = *dirent;
-	if (options && strchr(options, '1') != NULL)
-		strcpy(delimeter, "\n");
-	else
-		strcpy(delimeter, "  ");
 	if (node == NULL)
 		return (0);
 	while (node != NULL)
 	{
+		hidden_file = 0;
 		filename = strdup(node->str);
-		if (basename(filename)[0] != '.' && strcmp(basename(filename), "..") != 0)
+		if (basename(filename)[0] == '.' || strcmp(basename(filename), "..") == 0)
+			hidden_file = 1;
+		if (!options->all && hidden_file)
+			node = node->next;
+		else
 		{
 			printf("%s", basename(filename));
 			if (!is_directory(filename))
 				deleteParam(dirnames, filename);
 			a = 1;
-		}
 		node = node->next;
 		if (node && a)
-			printf("%s", delimeter);
+			printf("%s", options->delimeter);
+		}
 		free(filename);
 	}
 	printf("\n");
@@ -43,14 +43,14 @@ int print_files(char *options, Direntry **dirent, List **dirnames)
 
 /**
  * print_file_list - Prints the filelist
- * @options: options to be applied for each @dirnames
+ * @op: options to be applied for each @dirnames
  * @dirnames: the file options
  * @dirent: The list of the directories and files with absolute path.
  * @ec : to print a newline if an error was printed to OUTPUT
  *
  * Return: void
  */
-void print_file_list(char *options, List **dirnames, Direntry **dirent, int ec)
+void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 {
 	Direntry *node = NULL;
 	int a = 0;
@@ -63,7 +63,7 @@ void print_file_list(char *options, List **dirnames, Direntry **dirent, int ec)
 	/* print_files*/
 	node = get_files(*dirent);
 	sort_direntres(&node, &dirent_cmp);
-	no_files = print_files(options, &node, dirnames);
+	no_files = print_files(op, &node, dirnames);
 	free_direntry(node);
 	/* print_dirs*/
 	no_dirs = list_size(*dirnames);
@@ -80,7 +80,7 @@ void print_file_list(char *options, List **dirnames, Direntry **dirent, int ec)
 		node = get_direntres(param, *dirent);
 		sort_direntres(&node, &dirent_cmp);
 		removeDuplicates(node);
-		if (print_files(options, &node, dirnames) && i < no_dirs - 1)
+		if (print_files(op, &node, dirnames) && i < no_dirs - 1)
 			printf("\n");
 		free_direntry(node);
 		i++;

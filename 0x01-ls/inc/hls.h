@@ -3,6 +3,7 @@
 
 #include "direntry.h"
 #include "list.h"
+#include "options.h"
 #include <dirent.h>
 #include <grp.h>
 #include <libgen.h>
@@ -28,7 +29,7 @@
 int scan_files(List **dirnames,  Direntry **direntry);
 int dirwalk(char *dirname, Direntry **direntry);
 
-void print_file_list(char *options, List **dirnames, Direntry **dirent, int);
+void print_file_list(Options *options, List **dirnames, Direntry **dirent, int);
 
 void print_error(int error_code, char *name);
 
