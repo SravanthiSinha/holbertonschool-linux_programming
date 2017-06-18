@@ -16,9 +16,27 @@ int dirent_cmp(Direntry *node1, Direntry *node2, int reverse)
 	if (r)
 		return (reverse == 0 ? r : -r);
 	r = strcmp(node1->str, node2->str);
-	return (reverse == 0 ? -r : -r);
+	return (reverse == 0 ? -r : r);
 }
 
+/**
+  * dirent_cmp_size - compares the value of the 2 nodes by file size
+  * @node1: node1
+  * @node2: node2
+  * @reverse: reverse enabled or disabled.
+	*
+  * Return: compared value of the 2 nodes by file size.
+  * 0 if matches else > or < 0
+  */
+int dirent_cmp_size(Direntry *node1, Direntry *node2, int reverse)
+{
+	long a = file_size(node1->str);
+	long b = file_size(node2->str);
+
+	if (a == b)
+		return (dirent_cmp(node1, node2, reverse));
+	return (reverse == 0 ? (a > b ? -1 : 1) : (a < b ? -1 : 1));
+}
 
 /**
  * swap - swaps the value of the 2 Direntres
@@ -29,8 +47,19 @@ int dirent_cmp(Direntry *node1, Direntry *node2, int reverse)
  */
 void swap(Direntry *a, Direntry *b)
 {
-	char *temp = a->str;
+	char *temp;
+	int tdir;
+	long tsize;
 
+	tdir = a->is_dir;
+	a->is_dir = b->is_dir;
+	b->is_dir = tdir;
+
+	tsize = a->size;
+	a->size = b->size;
+	b->size = tsize;
+
+	temp = a->str;
 	a->str = b->str;
 	b->str = temp;
 }

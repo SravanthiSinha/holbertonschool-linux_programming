@@ -36,9 +36,11 @@ void print_error(int error_code, char *name);
 int file_exist(char *filename);
 int is_directory(const char *path);
 
+int dirent_cmp_size(Direntry *node1, Direntry *node2, int reverse);
 int dirent_cmp(Direntry *, Direntry *, int reverse);
 void sort_direntres(Direntry **, int (*c)(Direntry *, Direntry *, int), int r);
 
+int node_cmp_size(List *node1, List *node2, int reverse);
 int node_cmp(List *node1, List *node2, int reverse);
 void sort_list(List **a, int (*cmp)(List *a, List *b, int r), int reverse);
 

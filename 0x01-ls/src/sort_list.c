@@ -19,6 +19,24 @@ int node_cmp(List *node1, List *node2, int reverse)
 	return (reverse == 0 ? -r : r);
 }
 
+/**
+  * node_cmp_size - compares the value of the 2 nodes by file size
+  * @node1: node1
+  * @node2: node2
+  * @reverse: reverse enabled or disabled.
+	*
+  * Return: compared value of the 2 nodes by file size.
+  * 0 if matches else > or < 0
+  */
+int node_cmp_size(List *node1, List *node2, int reverse)
+{
+	long a = file_size(node1->str);
+	long b = file_size(node2->str);
+
+	if (a == b)
+		return (node_cmp(node1, node2, reverse));
+	return (reverse == 0 ? (a > b ? -1 : 1) : (a < b ? -1 : 1));
+}
 
 /**
  * swap_list - swaps the value of the 2 nodes

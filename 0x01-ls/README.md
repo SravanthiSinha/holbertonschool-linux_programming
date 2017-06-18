@@ -165,3 +165,35 @@ test/folder1/:
 folder1-3  folder1-2  folder1-1
 $
 ```
+
+Task 8: Implement the -S option.
+Usage : hls [-1aAlrS] [FILE]...
+```
+$./hls -l test
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 abc
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 ABC
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 file
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 File2
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 file3
+drwxrwxr-x 5 hybridivy hybridivy 4096 Jun 14 14:37 folder1
+drwxrwxr-x 2 hybridivy hybridivy 4096 Jun 14 14:36 Folder2
+drwxrwxr-x 2 hybridivy hybridivy 4096 Jun 14 14:36 folder3
+$./hls -lS test
+drwxrwxr-x 5 hybridivy hybridivy 4096 Jun 14 14:37 folder1
+drwxrwxr-x 2 hybridivy hybridivy 4096 Jun 14 14:36 Folder2
+drwxrwxr-x 2 hybridivy hybridivy 4096 Jun 14 14:36 folder3
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 abc
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 ABC
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 file
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 File2
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 file3
+$./hls -lSr test
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 file3
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 File2
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 file
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 ABC
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 14 14:35 abc
+drwxrwxr-x 2 hybridivy hybridivy 4096 Jun 14 14:36 folder3
+drwxrwxr-x 2 hybridivy hybridivy 4096 Jun 14 14:36 Folder2
+drwxrwxr-x 5 hybridivy hybridivy 4096 Jun 14 14:37 folder1
+```

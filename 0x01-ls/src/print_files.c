@@ -148,22 +148,21 @@ int print_files(Options *options, Direntry **dirent, List **dirnames, int w)
 void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 {
 	Direntry *node = NULL;
-	int a = 0;
-	int i = 0;
-	int no_dirs = 0;
-	int no_files = 0;
+	int a = 0, i = 0;
+	int no_dirs = 0, no_files = 0;
 	char param[MAX_PATH_SIZE];
 	long size;
 
 	param[0] = '\0';
-	/* print_files*/
-	node = get_files(*dirent);
-	sort_direntres(&node, &dirent_cmp, op->reverse);
+	node = get_files(*dirent);/* print_files*/
+	if (op->sort_size)
+		sort_direntres(&node, &dirent_cmp_size, op->reverse);
+	else
+		sort_direntres(&node, &dirent_cmp, op->reverse);
 	size = get_biggest_size(*dirent);
 	no_files = print_files(op, &node, dirnames, no_digits(size));
 	free_direntry(node);
-	/* print_dirs*/
-	no_dirs = list_size(*dirnames);
+	no_dirs = list_size(*dirnames);/* print_dirs*/
 	if (no_files && no_dirs)
 		printf("\n");
 	while (i < no_dirs)
@@ -175,9 +174,12 @@ void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 		if (param[strlen(param) - 1] != '/')
 			strcat(param, "/");
 		node = get_direntres(param, *dirent);
-		sort_direntres(&node, &dirent_cmp, op->reverse);
-		size = get_biggest_size(*dirent);
+		if (op->sort_size)
+			sort_direntres(&node, &dirent_cmp_size, op->reverse);
+		else
+			sort_direntres(&node, &dirent_cmp, op->reverse);
 		removeDuplicates(node);
+		size = get_biggest_size(*dirent);
 		if (print_files(op, &node, dirnames, no_digits(size)) && i < no_dirs - 1)
 			printf("\n");
 		free_direntry(node);
