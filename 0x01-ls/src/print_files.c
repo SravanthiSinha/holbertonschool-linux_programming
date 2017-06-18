@@ -13,17 +13,23 @@ int print_files(Options *options, Direntry **dirent, List **dirnames)
 	Direntry *node = *dirent;
 	char *filename;
 	int a = 0;
+	int implied;
 	int hidden_file;
 
 	if (node == NULL)
 		return (0);
 	while (node != NULL)
 	{
+		implied = 0;
 		hidden_file = 0;
 		filename = strdup(node->str);
-		if (basename(filename)[0] == '.' || strcmp(basename(filename), "..") == 0)
+		if (basename(filename)[0] == '.')
 			hidden_file = 1;
-		if (!options->all && hidden_file)
+		if (!strcmp(basename(filename), ".") || !strcmp(basename(filename), ".."))
+			implied = 1;
+		if (!options->all  && !options->almost_all && hidden_file)
+			node = node->next;
+		else if (options->almost_all && implied)
 			node = node->next;
 		else
 		{
@@ -62,7 +68,7 @@ void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 	param[0] = '\0';
 	/* print_files*/
 	node = get_files(*dirent);
-	sort_direntres(&node, &dirent_cmp);
+	sort_direntres(&node, &dirent_cmp, op->reverse);
 	no_files = print_files(op, &node, dirnames);
 	free_direntry(node);
 	/* print_dirs*/
@@ -78,7 +84,7 @@ void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 		if (param[strlen(param) - 1] != '/')
 			strcat(param, "/");
 		node = get_direntres(param, *dirent);
-		sort_direntres(&node, &dirent_cmp);
+		sort_direntres(&node, &dirent_cmp, op->reverse);
 		removeDuplicates(node);
 		if (print_files(op, &node, dirnames) && i < no_dirs - 1)
 			printf("\n");

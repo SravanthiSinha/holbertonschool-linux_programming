@@ -4,17 +4,19 @@
   * dirent_cmp - compares the value of the 2 nodes alphabetically
   * @node1: node1
   * @node2: node2
-  *
+  * @reverse: reverse enabled or disabled.
+	*
   * Return: compared value of the 2 nodes alphabetically.
   * 0 if matches else > or < 0
   */
-int dirent_cmp(Direntry *node1, Direntry *node2)
+int dirent_cmp(Direntry *node1, Direntry *node2, int reverse)
 {
 	int r = strcasecmp(node1->str, node2->str);
 
 	if (r)
-		return (r);
-	return (-strcmp(node1->str, node2->str));
+		return (reverse == 0 ? r : -r);
+	r = strcmp(node1->str, node2->str);
+	return (reverse == 0 ? -r : -r);
 }
 
 
@@ -37,11 +39,12 @@ void swap(Direntry *a, Direntry *b)
 /**
  * sort_direntres - sorts the direntry based on the cmp functions
  * @a: direntry to be sorted
- * @cmp: cmp function to be applied for sorting
+ * @c: cmp function to be applied for sorting
+ * @r: reverse enabled or disabled.
  *
  * Return: void
  */
-void sort_direntres(Direntry **a, int (*cmp)(Direntry *a, Direntry *b))
+void sort_direntres(Direntry **a, int (*c)(Direntry *, Direntry *, int), int r)
 {
 	Direntry *traverse = *a;
 	Direntry *yes;
@@ -52,7 +55,7 @@ void sort_direntres(Direntry **a, int (*cmp)(Direntry *a, Direntry *b))
 	{
 		for (yes = *a; yes->next != NULL; yes = yes->next)
 		{
-			if ((*cmp)(yes, yes->next) > 0)
+			if ((*c)(yes, yes->next, r) > 0)
 				swap(yes, yes->next);
 		}
 	}

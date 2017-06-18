@@ -11,7 +11,7 @@
 int validate_options(char **argv, char *options)
 {
 	int i, j;
-	char valid_options[2] = {'1', 'a'};
+	char valid_options[4] = {'1', 'a', 'A', 'r'};
 	int exit_value = HLS_SUCCESS;
 
 	options[0] = '\0';
@@ -51,6 +51,14 @@ Options *inititate_options(char *options)
 			options_s->all = 1;
 		else
 			options_s->all = 0;
+		if (options && strchr(options, 'A') != NULL && strchr(options, 'a') == NULL)
+			options_s->almost_all = 1;
+		else
+			options_s->almost_all = 0;
+		if (options && strchr(options, 'r') != NULL)
+			options_s->reverse = 1;
+		else
+			options_s->reverse = 0;
 	}
 	return (options_s);
 }

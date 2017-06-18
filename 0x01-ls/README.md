@@ -55,3 +55,49 @@ Folder2
 folder3
 $
 ```
+
+Task 3: To Implement the -a option.
+
+Usage : hls [-a1] [FILE]...
+
+```
+$ ls -a test
+.  ..  abc  ABC  file  File2  file3  folder1  Folder2  folder3  .hidden1  .hidden2  ..hidden3
+$ ./hls -a test
+.  ..  abc  ABC  file  File2  file3  folder1  Folder2  folder3  .hidden1  .hidden2  ..hidden3
+$ ./hls -a test/folder1
+.  ..  folder1-1  folder1-2  folder1-3
+$  
+```
+
+Task 4: Implement the -A option.
+
+Usage : hls [-A] [FILE]...
+
+```
+$ ls -A test
+abc  ABC  file  File2  file3  folder1  Folder2  folder3  .hidden1  .hidden2  ..hidden3
+$ ./hls -A test
+abc  ABC  file  File2  file3  folder1  Folder2  folder3  .hidden1  .hidden2  ..hidden3
+$ ./hls -A test/folder1
+folder1-1  folder1-2  folder1-3
+$
+```
+
+
+Task 7: Implement the -r option.
+Usage : hls [-1aAlr] [FILE]...
+
+```
+$ ./hls test
+abc ABC file File2 file3 folder1 Folder2 folder3
+$ ./hls test -r
+folder3  Folder2  folder1  file3  File2  file  ABC  abc
+$ ./hls test/folder1/ test/folder3/ -r
+test/folder3/:
+symlink  folder3-1  file2  file1
+
+test/folder1/:
+folder1-3  folder1-2  folder1-1
+$
+```

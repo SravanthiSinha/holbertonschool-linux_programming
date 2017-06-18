@@ -29,18 +29,18 @@
 int scan_files(List **dirnames,  Direntry **direntry);
 int dirwalk(char *dirname, Direntry **direntry);
 
-void print_file_list(Options *options, List **dirnames, Direntry **dirent, int);
+void print_file_list(Options *op, List **dirnames, Direntry **dirent, int);
 
 void print_error(int error_code, char *name);
 
 int file_exist(char *filename);
 int is_directory(const char *path);
 
-int dirent_cmp(Direntry *, Direntry *);
-void sort_direntres(Direntry **a, int (*cmp)(Direntry *a, Direntry *b));
+int dirent_cmp(Direntry *, Direntry *, int reverse);
+void sort_direntres(Direntry **, int (*c)(Direntry *, Direntry *, int), int r);
 
-int node_cmp(List *node1, List *node2);
-void sort_list(List **a, int (*cmp)(List *a, List *b));
+int node_cmp(List *node1, List *node2, int reverse);
+void sort_list(List **a, int (*cmp)(List *a, List *b, int r), int reverse);
 
 int validate_options(char **argv, char *options);
 #endif
