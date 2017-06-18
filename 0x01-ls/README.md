@@ -30,3 +30,28 @@ $ ./hls test/random
 hls: cannot access test/random: No such file or directory
 $
 ```
+
+
+Task 2: To Implement the -1 option.
+
+```
+$ ls test -1
+abc
+ABC
+file
+File2
+file3
+folder1
+Folder2
+folder3
+$ ./hls test -1
+abc
+ABC
+file
+File2
+file3
+folder1
+Folder2
+folder3
+$
+```

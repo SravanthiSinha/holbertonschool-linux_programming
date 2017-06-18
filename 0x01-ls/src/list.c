@@ -31,8 +31,8 @@ int list_size(List *list)
  */
 int list_add(List **list, char *content)
 {
-	List *head;
-	List *node;
+	List *head = NULL;
+	List *node = NULL;
 
 	head = *list;
 	node = malloc(sizeof(List));
@@ -42,7 +42,6 @@ int list_add(List **list, char *content)
 	node->next = head;
 	*list = node;
 	return (0);
-
 }
 
 /**
@@ -53,13 +52,14 @@ int list_add(List **list, char *content)
  */
 List *array_to_list(char **a)
 {
+	List *list = NULL;
+	int i = 0;
 
-	List *list;
-	int i;
-
-	list = NULL;
 	for (i = 0; a[i]; i++)
-		list_add(&list, a[i]);
+	{
+		if ((a[i][0] == '-' && strlen(a[i]) == 1) || (a[i][0] != '-'))
+			list_add(&list, a[i]);
+	}
 	return (list);
 }
 

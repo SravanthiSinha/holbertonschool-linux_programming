@@ -11,20 +11,23 @@
 int main(int __attribute__((unused)) argc, char **argv)
 {
 	int exit_value = HLS_SUCCESS;
-	int i;
 	Direntry *direntry = NULL;
 	List *dirnames = NULL;
 	char *names[2] = {"./", NULL};
+	char options[MAX_OPTION_SIZE];
 	int error_occured = 0;
+
 
 	/* default: current directory */
 	if (argc == 1 || (argc == 2 && strcmp(argv[1], ".") == 0))
 		dirnames = array_to_list(names);
 	else if (argc > 1)
 	{
-		if (argv[1][0] == '-')
-			dirnames = array_to_list(argv + 2);
-		else
+		exit_value = validate_options(argv + 1, options);
+		/* default: current directory */
+		if (exit_value == HLS_SUCCESS && argc == 2 && strlen(argv[1]) > 1)
+			dirnames = array_to_list(names);
+		else if (exit_value == HLS_SUCCESS)
 			dirnames = array_to_list(argv + 1);
 		sort_list(&dirnames, &node_cmp);
 	}
@@ -33,7 +36,7 @@ int main(int __attribute__((unused)) argc, char **argv)
 		exit_value = scan_files(&dirnames, &direntry);
 		if (exit_value != HLS_SUCCESS)
 			error_occured = 1;
-		print_file_list(&dirnames, &direntry, error_occured);
+		print_file_list(options, &dirnames, &direntry, error_occured);
 		free_direntry(direntry);
 		free_list(dirnames);
 	}

@@ -17,7 +17,9 @@ typedef struct Direntry
 int direntry_size(Direntry *direntry);
 void print_direntry(Direntry *direntry);
 void free_direntry(Direntry *head);
+void removeDuplicates(Direntry *head);
 int direntry_add(Direntry **direntry, char *content, int is_dir);
 void deleteDirent(Direntry **head_ref, char *key);
 Direntry *get_direntres(char *str, Direntry *en);
+Direntry *get_files(Direntry *en);
 #endif

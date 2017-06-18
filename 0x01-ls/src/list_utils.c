@@ -9,8 +9,8 @@
  */
 int delete_nodeint_at_index(List **head, unsigned int index)
 {
-	List *curr;
-	List *temp;
+	List *curr = NULL;
+	List *temp = NULL;
 	unsigned int i = 0;
 
 	if (*head == NULL)
@@ -50,7 +50,7 @@ int delete_nodeint_at_index(List **head, unsigned int index)
  */
 void deleteParam(List **head_ref, char *key)
 {
-	List *temp = *head_ref, *prev;
+	List *temp = *head_ref, *prev = NULL;
 
 	if (temp != NULL && strcmp(temp->str, key) == 0)
 	{

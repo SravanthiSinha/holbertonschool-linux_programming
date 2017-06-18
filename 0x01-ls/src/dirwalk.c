@@ -12,7 +12,6 @@
  */
 int scan_files(List **dirnames, Direntry **direntry)
 {
-	int i;
 	int exit_value = HLS_SUCCESS;
 	int error_occured = 0;
 	char *param;
@@ -28,10 +27,16 @@ int scan_files(List **dirnames, Direntry **direntry)
 			exit_value = dirwalk(param, direntry);
 			if (exit_value == HLS_MAJOR_ERROR)
 				break;
+			else if (exit_value == HLS_PERMISSION_DENIED)
+			{
+				print_error(HLS_PERMISSION_DENIED, param);
+				deleteParam(dirnames, param);
+				error_occured = 1;
+			}
 		}
 		else
 		{
-			print_error(HS_INVALID_FILE_DIR, param);
+			print_error(HLS_INVALID_FILE_DIR, param);
 			deleteParam(dirnames, param);
 			error_occured = 1;
 		}
@@ -53,8 +58,8 @@ int scan_files(List **dirnames, Direntry **direntry)
  */
 int dirwalk(char *dirname, Direntry **direntry)
 {
-	DIR *dir;
-	struct dirent *read;
+	DIR *dir = NULL;
+	struct dirent *read = NULL;
 	int exit_value = HLS_SUCCESS;
 	char path_name[MAX_PATH_SIZE];
 
@@ -64,6 +69,8 @@ int dirwalk(char *dirname, Direntry **direntry)
 	else
 	{
 		dir = opendir(dirname);
+		if (!dir)
+			return (HLS_PERMISSION_DENIED);
 		while ((read = readdir(dir)) != NULL && exit_value == HLS_SUCCESS)
 		{
 			strcat(path_name, dirname);

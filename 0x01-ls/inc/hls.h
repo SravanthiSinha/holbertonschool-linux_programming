@@ -19,14 +19,16 @@
 #define HLS_MINOR_ERROR 1
 #define HLS_MAJOR_ERROR 2
 
-#define HS_INVALID_FILE_DIR 3
-#define HS_INVALID_OPTION 4
-#define MAX_PATH_SIZE 100
+#define HLS_INVALID_FILE_DIR 3
+#define HLS_INVALID_OPTION 4
+#define HLS_PERMISSION_DENIED 5
+#define MAX_PATH_SIZE 400
+#define MAX_OPTION_SIZE 100
 
 int scan_files(List **dirnames,  Direntry **direntry);
 int dirwalk(char *dirname, Direntry **direntry);
 
-void print_file_list(List **dirnames, Direntry **dirent, int);
+void print_file_list(char *options, List **dirnames, Direntry **dirent, int);
 
 void print_error(int error_code, char *name);
 
@@ -38,4 +40,6 @@ void sort_direntres(Direntry **a, int (*cmp)(Direntry *a, Direntry *b));
 
 int node_cmp(List *node1, List *node2);
 void sort_list(List **a, int (*cmp)(List *a, List *b));
+
+int validate_options(char **argv, char *options);
 #endif
