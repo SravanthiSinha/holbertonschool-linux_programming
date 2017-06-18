@@ -11,7 +11,7 @@
 int validate_options(char **argv, char *options)
 {
 	int i, j;
-	char valid_options[4] = {'1', 'a', 'A', 'r'};
+	char valid_options[5] = {'1', 'a', 'A', 'r', 'l'};
 	int exit_value = HLS_SUCCESS;
 
 	options[0] = '\0';
@@ -43,7 +43,7 @@ Options *inititate_options(char *options)
 
 	if (options_s != NULL)
 	{
-		if (options && strchr(options, '1') != NULL)
+		if (options && strchr(options, '1') != NULL || strchr(options, 'l') != NULL)
 			options_s->delimeter = strdup("\n");
 		else
 			options_s->delimeter = strdup("  ");
@@ -59,6 +59,12 @@ Options *inititate_options(char *options)
 			options_s->reverse = 1;
 		else
 			options_s->reverse = 0;
+		if (options && strchr(options, 'l') != NULL)
+		{
+			options_s->long_format = 1;
+		}
+		else
+			options_s->long_format = 0;
 	}
 	return (options_s);
 }

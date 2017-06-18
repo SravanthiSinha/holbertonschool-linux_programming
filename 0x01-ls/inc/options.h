@@ -7,6 +7,8 @@
  * @almost_all : If -A option is given almost_all =1 else 0
  * @delimeter : If -1 option is given delimeter ="\n" else "  "
  * @reverse : If -r option is given almost_all =1 else 0
+ * @long_format : If -l option is given long_format =1 else 0
+ *
  */
 typedef struct Options
 {
@@ -14,6 +16,7 @@ typedef struct Options
 	int almost_all;
 	char *delimeter;
 	int reverse;
+	int long_format;
 } Options;
 
 Options *inititate_options(char *options);

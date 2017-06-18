@@ -43,4 +43,7 @@ int node_cmp(List *node1, List *node2, int reverse);
 void sort_list(List **a, int (*cmp)(List *a, List *b, int r), int reverse);
 
 int validate_options(char **argv, char *options);
+
+int no_digits(long n);
+long file_size(const char *filepath);
 #endif

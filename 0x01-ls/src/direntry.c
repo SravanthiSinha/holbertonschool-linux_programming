@@ -6,10 +6,10 @@
  * @direntry: The Direntry where the values are added.
  * @content: The value to be added.
  * @is_dir: if a file path is a directory = 1 else 0
- *
+ * @size : file_size
  * Return: on success: HLS_SUCCESS - 0 , on Failure: HLS_MAJOR_ERROR -2.
  */
-int direntry_add(Direntry **direntry, char *content, int is_dir)
+int direntry_add(Direntry **direntry, char *content, int is_dir, long size)
 {
 	Direntry *head = NULL;
 	Direntry *node = NULL;
@@ -22,6 +22,7 @@ int direntry_add(Direntry **direntry, char *content, int is_dir)
 			return (1);
 		head->str = strdup(content);
 		head->is_dir = is_dir;
+		head->size = size;
 		head->next = NULL;
 		*direntry = head;
 		return (HLS_SUCCESS);
@@ -33,6 +34,7 @@ int direntry_add(Direntry **direntry, char *content, int is_dir)
 			return (1);
 		node->str = strdup(content);
 		head->is_dir = is_dir;
+		head->size = size;
 		node->next = *direntry;
 		*direntry = node;
 		return (HLS_SUCCESS);

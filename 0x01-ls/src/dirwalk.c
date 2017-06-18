@@ -52,20 +52,20 @@ int scan_files(List **dirnames, Direntry **direntry)
  * dirwalk - Adds to list consisiting of the files with in the
  * files in a particluar directory and files
  * @dirname: input file opton
- * @direntry: The List to be built with the file_path
+ * @en: The List to be built with the file_path
  *
  * Return: on success: HLS_SUCCESS - 0 , on Failure: HLS_MAJOR_ERROR
  */
-int dirwalk(char *dirname, Direntry **direntry)
+int dirwalk(char *dirname, Direntry **en)
 {
 	DIR *dir = NULL;
 	struct dirent *read = NULL;
 	int exit_value = HLS_SUCCESS;
-	char path_name[MAX_PATH_SIZE];
+	char path[MAX_PATH_SIZE];
 
-	path_name[0] = '\0';
+	path[0] = '\0';
 	if (!is_directory(dirname))
-		exit_value = direntry_add(direntry, dirname, 0);
+		exit_value = direntry_add(en, dirname, 0, file_size(dirname));
 	else
 	{
 		dir = opendir(dirname);
@@ -73,12 +73,12 @@ int dirwalk(char *dirname, Direntry **direntry)
 			return (HLS_PERMISSION_DENIED);
 		while ((read = readdir(dir)) != NULL && exit_value == HLS_SUCCESS)
 		{
-			strcat(path_name, dirname);
-			if (path_name[strlen(path_name) - 1] != '/')
-				strcat(path_name, "/");
-			strcat(path_name, read->d_name);
-			exit_value = direntry_add(direntry, path_name, is_directory(path_name));
-			path_name[0] = '\0';
+			strcat(path, dirname);
+			if (path[strlen(path) - 1] != '/')
+				strcat(path, "/");
+			strcat(path, read->d_name);
+			exit_value = direntry_add(en, path, is_directory(path), file_size(path));
+			path[0] = '\0';
 		}
 		closedir(dir);
 	}
