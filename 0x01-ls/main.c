@@ -18,8 +18,9 @@ int main(int __attribute__((unused)) argc, char **argv)
 	int error_occured = 0;
 	Options *options_s = NULL;
 
+	options[0] = '\0';
 	/* default: current directory */
-	if (argc == 1 || (argc == 2 && strcmp(argv[1], ".") == 0))
+	if (argc == 1 || (argc == 2 && _strcmp(argv[1], ".") == 0))
 		dirnames = array_to_list(names);
 	else if (argc > 1)
 	{

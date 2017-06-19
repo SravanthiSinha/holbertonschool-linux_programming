@@ -37,20 +37,20 @@ int dirent_cmp(Direntry *node1, Direntry *node2, int reverse)
 	char *b;
 	int r = 0;
 
-	a = strdup(basename(node1->str));
-	b = strdup(basename(node2->str));
-	if (strcmp(a, ".") != 0 && strcmp(a, "..") != 0)
+	a = _strdup(basename(node1->str));
+	b = _strdup(basename(node2->str));
+	if (_strcmp(a, ".") != 0 && _strcmp(a, "..") != 0)
 		a = ltrim(a);
-	if (strcmp(b, ".") != 0 && strcmp(b, "..") != 0)
+	if (_strcmp(b, ".") != 0 && _strcmp(b, "..") != 0)
 		b = ltrim(b);
-	r = strcasecmp(a, b);
+	r = _strcasecmp(a, b);
 	if (r)
 	{
 		free(a);
 		free(b);
 		return (reverse == 0 ? r : -r);
 	}
-	r = strcmp(a, b);
+	r = _strcmp(a, b);
 	free(a);
 	free(b);
 	return (reverse == 0 ? -r : r);

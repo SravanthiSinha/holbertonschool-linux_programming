@@ -11,11 +11,11 @@
  */
 int node_cmp(List *node1, List *node2, int reverse)
 {
-	int r = strcasecmp(node1->str, node2->str);
+	int r = _strcasecmp(node1->str, node2->str);
 
 	if (r)
 		return (reverse == 0 ? r : -r);
-	r = strcmp(node1->str, node2->str);
+	r = _strcmp(node1->str, node2->str);
 	return (reverse == 0 ? -r : r);
 }
 

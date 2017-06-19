@@ -52,7 +52,7 @@ void deleteParam(List **head_ref, char *key)
 {
 	List *temp = *head_ref, *prev = NULL;
 
-	if (temp != NULL && strcmp(temp->str, key) == 0)
+	if (temp != NULL && _strcmp(temp->str, key) == 0)
 	{
 		*head_ref = temp->next;
 		free(temp->str);
@@ -60,7 +60,7 @@ void deleteParam(List **head_ref, char *key)
 		return;
 	}
 
-	while (temp != NULL && strcmp(temp->str, key) != 0)
+	while (temp != NULL && _strcmp(temp->str, key) != 0)
 	{
 		prev = temp;
 		temp = temp->next;

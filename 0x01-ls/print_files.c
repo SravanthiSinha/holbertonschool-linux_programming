@@ -69,8 +69,8 @@ void print_file_long_format(char *path_name, int size_width)
 		exit(HLS_MINOR_ERROR);
 	usr = getpwuid(sb.st_uid);
 	grp = getgrgid(sb.st_gid);
-	time = strtok(ctime(&(sb.st_mtime)), "\n");
-	time[strlen(time) - 8] = '\0';
+	time = _strtok(ctime(&(sb.st_mtime)), "\n");
+	time[_strlen(time) - 8] = '\0';
 	printf("%s %ld ", get_permissions(sb), (long)sb.st_nlink);
 	printf("%s ", usr != NULL ? usr->pw_name : "NULL");
 	printf("%s ", grp != NULL ? grp->gr_name : "NULL");
@@ -108,10 +108,10 @@ int print_files(Options *options, Direntry **dirent, List **dirnames, int w)
 	{
 		implied = 0;
 		hidden_file = 0;
-		filename = strdup(node->str);
+		filename = _strdup(node->str);
 		if (basename(filename)[0] == '.')
 			hidden_file = 1;
-		if (!strcmp(basename(filename), ".") || !strcmp(basename(filename), ".."))
+		if (!_strcmp(basename(filename), ".") || !_strcmp(basename(filename), ".."))
 			implied = 1;
 		if (!options->all  && !options->almost_all && hidden_file)
 			node = node->next;
@@ -148,7 +148,7 @@ int print_files(Options *options, Direntry **dirent, List **dirnames, int w)
 void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 {
 	Direntry *node = NULL;
-	int a = 0, i = 0;
+	int i = 0;
 	int no_dirs = 0, no_files = 0;
 	char param[MAX_PATH_SIZE];
 	long size;
@@ -167,12 +167,11 @@ void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 		printf("\n");
 	while (i < no_dirs)
 	{
-		a = 0;
-		strcat(param, get_node(*dirnames, i));
+		_strcat(param, get_node(*dirnames, i));
 		if ((no_dirs > 1 || ec || no_files) && is_directory(param))
 			printf("%s:\n", param);
-		if (param[strlen(param) - 1] != '/')
-			strcat(param, "/");
+		if (param[_strlen(param) - 1] != '/')
+			_strcat(param, "/");
 		node = get_direntres(param, *dirent);
 		if (op->sort_size)
 			sort_direntres(&node, &dirent_cmp_size, op->reverse);

@@ -58,3 +58,16 @@ int no_digits(long n)
 	}
 	return (count);
 }
+
+/**
+ * basename - returns only the filename for a file path
+ * @filepath: file path
+ *
+ * Return: a pointers to null-terminated strings
+ */
+char *basename(const char *filepath)
+{
+	char *p = _strrchr(filepath, '/');
+
+	return (p ? p + 1 : (char *)filepath);
+}

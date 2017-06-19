@@ -1,20 +1,18 @@
 #ifndef _HEADER_H_
 #define _HEADER_H_
 
-#include "direntry.h"
-#include "list.h"
-#include "options.h"
 #include <dirent.h>
 #include <grp.h>
-#include <libgen.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+#include "strings.h"
+#include "direntry.h"
+#include "list.h"
+#include "options.h"
 
 #define HLS_SUCCESS 0
 #define HLS_MINOR_ERROR 1
@@ -48,4 +46,5 @@ int validate_options(char **argv, char *options);
 
 int no_digits(long n);
 long file_size(const char *filepath);
+char *basename(const char *filename);
 #endif

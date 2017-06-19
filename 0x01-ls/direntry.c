@@ -20,7 +20,7 @@ int direntry_add(Direntry **direntry, char *content, int is_dir, long size)
 		head = malloc(sizeof(Direntry));
 		if (head == NULL)
 			return (1);
-		head->str = strdup(content);
+		head->str = _strdup(content);
 		head->is_dir = is_dir;
 		head->size = size;
 		head->next = NULL;
@@ -32,7 +32,7 @@ int direntry_add(Direntry **direntry, char *content, int is_dir, long size)
 		node = malloc(sizeof(Direntry));
 		if (node == NULL)
 			return (1);
-		node->str = strdup(content);
+		node->str = _strdup(content);
 		head->is_dir = is_dir;
 		head->size = size;
 		node->next = *direntry;

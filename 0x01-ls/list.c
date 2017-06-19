@@ -38,7 +38,7 @@ int list_add(List **list, char *content)
 	node = malloc(sizeof(List));
 	if (node == NULL)
 		return (1);
-	node->str = strdup(content);
+	node->str = _strdup(content);
 	node->next = head;
 	*list = node;
 	return (0);
@@ -57,7 +57,7 @@ List *array_to_list(char **a)
 
 	for (i = 0; a[i]; i++)
 	{
-		if ((a[i][0] == '-' && strlen(a[i]) == 1) || (a[i][0] != '-'))
+		if ((a[i][0] == '-' && _strlen(a[i]) == 1) || (a[i][0] != '-'))
 			list_add(&list, a[i]);
 	}
 	return (list);

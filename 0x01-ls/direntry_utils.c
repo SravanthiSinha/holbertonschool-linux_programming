@@ -14,13 +14,13 @@ Direntry *get_direntres(char *str, Direntry *en)
 
 	while (en != NULL)
 	{
-		if (strncmp(en->str, str, strlen(str)) == 0)
+		if (_strncmp(en->str, str, _strlen(str)) == 0)
 		{
-			if (strchr(str, '/') == NULL)
-				index = strlen(str);
+			if (_strchr(str, '/') == NULL)
+				index = _strlen(str);
 			else
-				index = strlen(str) + 1;
-			if (strchr(en->str + index, '/') == NULL)
+				index = _strlen(str) + 1;
+			if (_strchr(en->str + index, '/') == NULL)
 			{
 				if (temp == NULL)
 				{
@@ -32,7 +32,7 @@ Direntry *get_direntres(char *str, Direntry *en)
 					temp->next = malloc(sizeof(Direntry));
 					temp = temp->next;
 				}
-				temp->str = strdup(en->str);
+				temp->str = _strdup(en->str);
 				temp->next = NULL;
 			}
 		}
@@ -76,7 +76,7 @@ Direntry *get_files(Direntry *en)
 
 	while (en != NULL)
 	{
-		if (strchr(en->str, '/') == NULL)
+		if (_strchr(en->str, '/') == NULL)
 		{
 			if (temp == NULL)
 			{
@@ -88,7 +88,7 @@ Direntry *get_files(Direntry *en)
 				temp->next = malloc(sizeof(Direntry));
 				temp = temp->next;
 			}
-			temp->str = strdup(en->str);
+			temp->str = _strdup(en->str);
 			temp->next = NULL;
 		}
 		en = en->next;
@@ -106,14 +106,14 @@ void deleteDirent(Direntry **head_ref, char *key)
 {
 	Direntry *temp = *head_ref, *prev;
 
-	if (temp != NULL && strcmp(temp->str, key) == 0)
+	if (temp != NULL && _strcmp(temp->str, key) == 0)
 		{
 		*head_ref = temp->next;
 		free(temp->str);
 		free(temp);
 		return;
 	}
-	while (temp != NULL && strcmp(temp->str, key) != 0)
+	while (temp != NULL && _strcmp(temp->str, key) != 0)
 	{
 		prev = temp;
 		temp = temp->next;
@@ -140,7 +140,7 @@ void removeDuplicates(Direntry *head)
 	{
 		if (head->next != NULL)
 		{
-			while (head->next != NULL && strcmp(head->next->str, head->str) == 0)
+			while (head->next != NULL && _strcmp(head->next->str, head->str) == 0)
 			{
 				temp = head->next;
 				head->next = temp->next;

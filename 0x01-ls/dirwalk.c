@@ -20,7 +20,7 @@ int scan_files(List **dirnames, Direntry **direntry)
 	node = *dirnames;
 	while (node != NULL)
 	{
-		param = strdup(node->str);
+		param = _strdup(node->str);
 		next = node->next;
 		if (file_exist(param))
 		{
@@ -73,10 +73,10 @@ int dirwalk(char *dirname, Direntry **en)
 			return (HLS_PERMISSION_DENIED);
 		while ((read = readdir(dir)) != NULL && exit_value == HLS_SUCCESS)
 		{
-			strcat(path, dirname);
-			if (path[strlen(path) - 1] != '/')
-				strcat(path, "/");
-			strcat(path, read->d_name);
+			_strcat(path, dirname);
+			if (path[_strlen(path) - 1] != '/')
+				_strcat(path, "/");
+			_strcat(path, read->d_name);
 			exit_value = direntry_add(en, path, is_directory(path), file_size(path));
 			path[0] = '\0';
 		}
