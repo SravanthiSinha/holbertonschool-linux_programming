@@ -112,15 +112,12 @@ lrwxrwxrwx 1 hybridivy hybridivy    8 Jun 18 10:17 myfile -> Makefile
 $
 ```
 
-Task 6: All options together. (still need to fix the sorting for hidden files)
+Task 6: All options together.
 
 Usage : hls [-1aAl] [FILE]...
 
 ```
 $./hls -lA test
--rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 ..hidden3
--rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 .hidden1
--rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 .hidden2
 -rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 abc
 -rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 ABC
 -rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 file
@@ -129,13 +126,13 @@ $./hls -lA test
 drwxrwxr-x 5 hybridivy hybridivy 4096 Jun 18 10:17 folder1
 drwxrwxr-x 2 hybridivy hybridivy 4096 Jun 18 10:17 Folder2
 drwxrwxr-x 2 hybridivy hybridivy 4096 Jun 18 10:17 folder3
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 .hidden1
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 .hidden2
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 ..hidden3
 lrwxrwxrwx 1 hybridivy hybridivy    8 Jun 18 10:17 myfile -> Makefile
 $./hls -lA -a test
 drwxrwxr-x 5 hybridivy hybridivy 4096 Jun 18 10:17 .
-drwxrwxr-x 6 hybridivy hybridivy 4096 Jun 18 14:18 ..
--rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 ..hidden3
--rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 .hidden1
--rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 .hidden2
+drwxrwxr-x 6 hybridivy hybridivy 4096 Jun 18 23:29 ..
 -rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 abc
 -rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 ABC
 -rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 file
@@ -144,6 +141,9 @@ drwxrwxr-x 6 hybridivy hybridivy 4096 Jun 18 14:18 ..
 drwxrwxr-x 5 hybridivy hybridivy 4096 Jun 18 10:17 folder1
 drwxrwxr-x 2 hybridivy hybridivy 4096 Jun 18 10:17 Folder2
 drwxrwxr-x 2 hybridivy hybridivy 4096 Jun 18 10:17 folder3
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 .hidden1
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 .hidden2
+-rw-rw-r-- 1 hybridivy hybridivy    0 Jun 18 10:17 ..hidden3
 lrwxrwxrwx 1 hybridivy hybridivy    8 Jun 18 10:17 myfile -> Makefile
 
 ```

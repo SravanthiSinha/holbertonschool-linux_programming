@@ -1,6 +1,28 @@
 #include "hls.h"
 
 /**
+  * ltrim - ltrims the string(removes leading .)
+  * @src: node1
+	*
+  * Return: ltrimmed string
+  */
+char *ltrim(char *src)
+{
+	char *original = src;
+	char *p = original;
+	int trimmed = 0;
+
+	do {
+		if (*original != '.' || trimmed)
+		{
+			trimmed = 1;
+			*p++ = *original;
+		}
+	}	while (*original++ != '\0');
+	return (src);
+}
+
+/**
   * dirent_cmp - compares the value of the 2 nodes alphabetically
   * @node1: node1
   * @node2: node2
@@ -11,11 +33,26 @@
   */
 int dirent_cmp(Direntry *node1, Direntry *node2, int reverse)
 {
-	int r = strcasecmp(node1->str, node2->str);
+	char *a;
+	char *b;
+	int r = 0;
 
+	a = strdup(basename(node1->str));
+	b = strdup(basename(node2->str));
+	if (strcmp(a, ".") != 0 && strcmp(a, "..") != 0)
+		a = ltrim(a);
+	if (strcmp(b, ".") != 0 && strcmp(b, "..") != 0)
+		b = ltrim(b);
+	r = strcasecmp(a, b);
 	if (r)
+	{
+		free(a);
+		free(b);
 		return (reverse == 0 ? r : -r);
-	r = strcmp(node1->str, node2->str);
+	}
+	r = strcmp(a, b);
+	free(a);
+	free(b);
 	return (reverse == 0 ? -r : r);
 }
 
