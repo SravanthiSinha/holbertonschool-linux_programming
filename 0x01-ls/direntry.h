@@ -24,5 +24,5 @@ int direntry_add(Direntry **direntry, char *content, int is_dir, long size);
 void deleteDirent(Direntry **head_ref, char *key);
 Direntry *get_direntres(char *str, Direntry *en);
 Direntry *get_files(Direntry *en);
-long get_biggest_size(Direntry *en);
+long biggest_size(Direntry *en);
 #endif

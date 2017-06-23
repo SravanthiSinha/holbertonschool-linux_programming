@@ -42,12 +42,12 @@ Direntry *get_direntres(char *str, Direntry *en)
 }
 
 /**
- * get_biggest_size - gets the size of the biggest file in the list.
+ * biggest_size - gets the size of the biggest file in the list.
  * @en: The Direntry where the size of each drientry are to be looked in.
  *
  * Return: size of the biggest file
  */
-long get_biggest_size(Direntry *en)
+long biggest_size(Direntry *en)
 {
 	long size = 0;
 	long tsize = 0;
