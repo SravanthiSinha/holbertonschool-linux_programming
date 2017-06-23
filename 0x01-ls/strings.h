@@ -11,4 +11,5 @@ char *_strstr(char *haystack, char *needle);
 int _strcasecmp(const char *s1, const char *s2);
 char *_strtok(char *str, const char *comp);
 char *_strrchr(const char *s, int c);
+char *_strcpy(char *dest, const char *src);
 #endif

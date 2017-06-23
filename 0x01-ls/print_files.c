@@ -59,7 +59,7 @@ char *get_permissions(struct stat sb)
 void print_file_long_format(char *path_name, int size_width)
 {
 	struct stat sb;
-	char *time;
+	char time[26];
 	char buf[1024];
 	int len;
 	struct passwd *usr;
@@ -69,8 +69,8 @@ void print_file_long_format(char *path_name, int size_width)
 		exit(HLS_MINOR_ERROR);
 	usr = getpwuid(sb.st_uid);
 	grp = getgrgid(sb.st_gid);
-	time = _strtok(ctime(&(sb.st_mtime)), "\n");
-	time[_strlen(time) - 8] = '\0';
+	_strcpy(time, ctime(&(sb.st_mtime)));
+	time[_strlen(time) - 9] = '\0';
 	printf("%s %ld ", get_permissions(sb), (long)sb.st_nlink);
 	printf("%s ", usr != NULL ? usr->pw_name : "NULL");
 	printf("%s ", grp != NULL ? grp->gr_name : "NULL");
