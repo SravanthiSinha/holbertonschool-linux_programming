@@ -119,16 +119,16 @@ int print_files(Options *options, Direntry **dirent, List **dirnames, int w)
 			node = node->next;
 		else
 		{
+			if (a)
+				printf("%s", options->delimeter);
 			if (options->long_format)
 				print_file_long_format(filename, w);
 			else
 				printf("%s", basename(filename));
 			if (!is_directory(filename))
 				deleteParam(dirnames, filename);
-			a = 1;
 		node = node->next;
-		if (node && a)
-			printf("%s", options->delimeter);
+		a = 1;
 		}
 		free(filename);
 	}
