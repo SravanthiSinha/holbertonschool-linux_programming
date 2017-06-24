@@ -77,7 +77,8 @@ char _tolower(unsigned char ch)
  */
 int _strcasecmp(const char *s1, const char *s2)
 {
-	const unsigned char *us1 = (const u_char *)s1, *us2 = (const u_char *)s2;
+	const unsigned char *us1 = (const unsigned char *)s1;
+	const unsigned char *us2 = (const unsigned char *)s2;
 
 	while (_tolower(*us1) == _tolower(*us2++))
 		if (*us1++ == '\0')
