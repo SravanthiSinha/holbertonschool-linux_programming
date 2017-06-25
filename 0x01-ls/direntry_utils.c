@@ -65,22 +65,22 @@ long biggest_size(Direntry *en)
 }
 
 /**
- * get_files - gets the list of the Direntres which are files in dirnames
+ * get_files - gets the list of the Direntres which are files in params
  * @diren: The Direntry where the value are to be looked in.
- * @dirnames: THe list of dirnames
+ * @params: THe list of params
  * Return: on success: List of of the Direntres, on Failure: NULL
  */
-Direntry *get_files(Direntry *diren, List *dirnames)
+Direntry *get_files(Direntry *diren, List *params)
 {
 	Direntry *result = NULL, *temp = NULL, *en =  NULL;
 	int i = 0;
 
-	for (i = 0 ; get_node(dirnames, i); i++)
+	for (i = 0 ; get_node(params, i); i++)
 	{
 		en = diren;
 		while (en != NULL)
 		{
-			if (_strcmp(en->str, get_node(dirnames, i)) == 0)
+			if (_strcmp(en->str, get_node(params, i)) == 0 && !is_directory(en->str))
 			{
 				if (temp == NULL)
 				{
