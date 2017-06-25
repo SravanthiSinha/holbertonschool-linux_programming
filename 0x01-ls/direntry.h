@@ -23,6 +23,6 @@ void removeDuplicates(Direntry *head);
 int direntry_add(Direntry **direntry, char *content, int is_dir, long size);
 void deleteDirent(Direntry **head_ref, char *key);
 Direntry *get_direntres(char *str, Direntry *en);
-Direntry *get_files(Direntry *en);
+Direntry *get_files(Direntry *en, List *dirnames);
 long biggest_size(Direntry *en);
 #endif

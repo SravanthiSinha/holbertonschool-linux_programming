@@ -66,32 +66,38 @@ long biggest_size(Direntry *en)
 
 /**
  * get_files - gets the list of the Direntres which are files in dirnames
- * @en: The Direntry where the value are to be looked in.
- *
+ * @diren: The Direntry where the value are to be looked in.
+ * @dirnames: THe list of dirnames
  * Return: on success: List of of the Direntres, on Failure: NULL
  */
-Direntry *get_files(Direntry *en)
+Direntry *get_files(Direntry *diren, List *dirnames)
 {
-	Direntry *result = NULL, *temp = NULL;
+	Direntry *result = NULL, *temp = NULL, *en =  NULL;
+	int i = 0;
 
-	while (en != NULL)
+	for (i = 0 ; get_node(dirnames, i); i++)
 	{
-		if (_strchr(en->str, '/') == NULL)
+		en = diren;
+		while (en != NULL)
 		{
-			if (temp == NULL)
+			if (_strcmp(en->str, get_node(dirnames, i)) == 0)
 			{
-				result = malloc(sizeof(Direntry));
-				temp = result;
+				if (temp == NULL)
+				{
+					result = malloc(sizeof(Direntry));
+					temp = result;
+				}
+				else
+				{
+					temp->next = malloc(sizeof(Direntry));
+					temp = temp->next;
+				}
+				temp->str = _strdup(en->str);
+				temp->next = NULL;
+				break;
 			}
-			else
-			{
-				temp->next = malloc(sizeof(Direntry));
-				temp = temp->next;
-			}
-			temp->str = _strdup(en->str);
-			temp->next = NULL;
+			en = en->next;
 		}
-		en = en->next;
 	}
 	return (result);
 }

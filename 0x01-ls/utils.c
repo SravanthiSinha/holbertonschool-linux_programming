@@ -42,12 +42,12 @@ int file_exist(char *filepath)
 }
 
 /**
- * no_digits - Number of digits in a number
+ * width - Number of digits in a number
  * @n: Number
  *
  * Return: Number of digits in a number.
  */
-int no_digits(long n)
+int width(long n)
 {
 	int count = 0;
 

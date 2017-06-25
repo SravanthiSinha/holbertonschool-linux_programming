@@ -53,10 +53,11 @@ char *get_permissions(struct stat sb)
  * print_file_long_format - Prints the filelist in long format
  * @path_name: path of the filename
  * @size_width : width of the biggest filesize
+ * @r: printing at root or dir level
  *
  * Return: void
  */
-void print_file_long_format(char *path_name, int size_width)
+void print_file_long_format(char *path_name, int size_width, int r)
 {
 	struct stat sb;
 	char time[26];
@@ -80,21 +81,22 @@ void print_file_long_format(char *path_name, int size_width)
 		len = readlink(path_name, buf, sizeof(buf) - 1);
 		if (len != -1)
 			buf[len] = '\0';
-		printf("%s -> %s", basename(path_name), buf);
+		printf("%s -> %s", r ? path_name : basename(path_name), buf);
 	}
 	else
-		printf("%s", basename(path_name));
+		printf("%s", r ? path_name : basename(path_name));
 }
 
 /**
  * print_files - Prints the filelist
- * @options: options to be applied for each @dirname
+ * @op: options to be applied for each @dirname
  * @dirnames: the file options
  * @dirent: The list of the directories and files with absolute path.
  * @w: width of the biggest filesize
+ * @r: printing at root or dir level
  * Return: 1 if list of files are printed else 0
  */
-int print_files(Options *options, Direntry **dirent, List **dirnames, int w)
+int print_files(Options *op, Direntry **dirent, List **dirnames, int w, int r)
 {
 	Direntry *node = *dirent;
 	char *filename;
@@ -113,19 +115,19 @@ int print_files(Options *options, Direntry **dirent, List **dirnames, int w)
 			hidden_file = 1;
 		if (!_strcmp(basename(filename), ".") || !_strcmp(basename(filename), ".."))
 			implied = 1;
-		if (!options->all  && !options->almost_all && hidden_file)
+		if (!op->all  && !op->almost_all && hidden_file)
 			node = node->next;
-		else if (options->almost_all && implied)
+		else if (op->almost_all && implied)
 			node = node->next;
 		else
 		{
 			if (a)
-				printf("%s", options->delimeter);
-			if (options->long_format)
-				print_file_long_format(filename, w);
+				printf("%s", op->delimeter);
+			if (op->long_format)
+				print_file_long_format(filename, w, r);
 			else
-				printf("%s", basename(filename));
-			if (!is_directory(filename))
+				printf("%s", r ? filename : basename(filename));
+			if (r)
 				deleteParam(dirnames, filename);
 		node = node->next;
 		a = 1;
@@ -154,12 +156,12 @@ void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 	long size;
 
 	param[0] = '\0';
-	node = get_files(*dirent);/* print_files*/
+	node = get_files(*dirent, *dirnames);/* print_files*/
 	if (op->sort_size)
 		sort_direntres(&node, &dirent_cmp_size, op->reverse);
 	else
-		sort_direntres(&node, &dirent_cmp, op->reverse);
-	no_files = print_files(op, &node, dirnames, no_digits(biggest_size(*dirent)));
+		sort_direntres(&node, &dirent_file_cmp, op->reverse);
+	no_files = print_files(op, &node, dirnames, width(biggest_size(*dirent)), 1);
 	free_direntry(node);
 	no_dirs = list_size(*dirnames);/* print_dirs*/
 	if (no_files && no_dirs)
@@ -180,7 +182,7 @@ void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 				sort_direntres(&node, &dirent_cmp, op->reverse);
 			removeDuplicates(node);
 			size = biggest_size(*dirent);
-			if (print_files(op, &node, dirnames, no_digits(size)) && i < no_dirs - 1)
+			if (print_files(op, &node, dirnames, width(size), 0) && i < no_dirs - 1)
 				printf("\n");
 		}
 		free_direntry(node);

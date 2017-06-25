@@ -10,8 +10,8 @@
 #include <time.h>
 #include <unistd.h>
 #include "strings.h"
-#include "direntry.h"
 #include "list.h"
+#include "direntry.h"
 #include "options.h"
 
 #define HLS_SUCCESS 0
@@ -34,6 +34,7 @@ void print_error(int error_code, char *name);
 int file_exist(char *filename);
 int is_directory(const char *path);
 
+int dirent_file_cmp(Direntry *node1, Direntry *node2, int reverse);
 int dirent_cmp_size(Direntry *node1, Direntry *node2, int reverse);
 int dirent_cmp(Direntry *, Direntry *, int reverse);
 void sort_direntres(Direntry **, int (*c)(Direntry *, Direntry *, int), int r);
@@ -44,7 +45,7 @@ void sort_list(List **a, int (*cmp)(List *a, List *b, int r), int reverse);
 
 int validate_options(char **argv, char *options);
 
-int no_digits(long n);
+int width(long n);
 long file_size(const char *filepath);
 char *basename(const char *filename);
 #endif
