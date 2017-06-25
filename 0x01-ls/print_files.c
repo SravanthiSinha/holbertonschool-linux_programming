@@ -72,10 +72,10 @@ void print_file_long_format(char *path_name, int size_width, int r)
 	grp = getgrgid(sb.st_gid);
 	_strcpy(time, ctime(&(sb.st_mtime)));
 	time[_strlen(time) - 9] = '\0';
-	printf("%s %ld ", get_permissions(sb), (long)sb.st_nlink);
+	printf("%s %ld ", get_permissions(sb), (long int)sb.st_nlink);
 	usr != NULL ? printf("%s ", usr->pw_name) : printf("%d ", sb.st_uid);
 	grp != NULL ? printf("%s ", grp->gr_name) : printf("%d ", sb.st_gid);
-	printf("%*ld%s ", size_width, (long)sb.st_size, time + 3);
+	printf("%*ld%s ", size_width, (long int) sb.st_size, time + 3);
 	if (S_ISLNK(sb.st_mode))
 	{
 		len = readlink(path_name, buf, sizeof(buf) - 1);
