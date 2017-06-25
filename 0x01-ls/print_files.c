@@ -73,8 +73,8 @@ void print_file_long_format(char *path_name, int size_width, int r)
 	_strcpy(time, ctime(&(sb.st_mtime)));
 	time[_strlen(time) - 9] = '\0';
 	printf("%s %ld ", get_permissions(sb), (long)sb.st_nlink);
-	printf("%s ", usr != NULL ? usr->pw_name : "NULL");
-	printf("%s ", grp != NULL ? grp->gr_name : "NULL");
+	usr != NULL ? printf("%s ", usr->pw_name) : printf("%d ", sb.st_uid);
+	grp != NULL ? printf("%s ", grp->gr_name) : printf("%d ", sb.st_gid);
 	printf("%*ld%s ", size_width, (long)sb.st_size, time + 3);
 	if (S_ISLNK(sb.st_mode))
 	{
