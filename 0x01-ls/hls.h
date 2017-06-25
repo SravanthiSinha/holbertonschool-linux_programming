@@ -24,6 +24,8 @@
 #define MAX_PATH_SIZE 400
 #define MAX_OPTION_SIZE 100
 
+#define INT_DIGITS 19		/* enough for 64 bit integer */
+
 int scan_files(List **dirnames,  Direntry **direntry);
 int dirwalk(char *dirname, Direntry **direntry);
 
@@ -45,7 +47,8 @@ void sort_list(List **a, int (*cmp)(List *a, List *b, int r), int reverse);
 
 int validate_options(char **argv, char *options);
 
-int width(long n);
+int *widths(Direntry *en);
 long file_size(const char *filepath);
 char *basename(const char *filename);
+int *widths(Direntry *en);
 #endif

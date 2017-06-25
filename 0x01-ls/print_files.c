@@ -52,12 +52,12 @@ char *get_permissions(struct stat sb)
 /**
  * print_file_long_format - Prints the filelist in long format
  * @path_name: path of the filename
- * @size_width : width of the biggest filesize
+ * @s : width of the biggest filesize
  * @r: printing at root or dir level
  *
  * Return: void
  */
-void print_file_long_format(char *path_name, int size_width, int r)
+void print_file_long_format(char *path_name, int *s, int r)
 {
 	struct stat sb;
 	char time[26];
@@ -73,9 +73,15 @@ void print_file_long_format(char *path_name, int size_width, int r)
 	_strcpy(time, ctime(&(sb.st_mtime)));
 	time[_strlen(time) - 9] = '\0';
 	printf("%s %ld ", get_permissions(sb), (long int)sb.st_nlink);
-	usr != NULL ? printf("%s ", usr->pw_name) : printf("%d ", sb.st_uid);
-	grp != NULL ? printf("%s ", grp->gr_name) : printf("%d ", sb.st_gid);
-	printf("%*ld%s ", size_width, (long int) sb.st_size, time + 3);
+	if (usr != NULL)
+		printf("%-*s ", s[1], usr->pw_name);
+	else
+		printf("%*d ", s[1], sb.st_uid);
+	if (grp != NULL)
+		printf("%-*s ", s[2], grp->gr_name);
+	else
+		printf("%*d ", s[2], sb.st_gid);
+	printf("%*ld%s ", s[0], (long int) sb.st_size, time + 3);
 	if (S_ISLNK(sb.st_mode))
 	{
 		len = readlink(path_name, buf, sizeof(buf) - 1);
@@ -96,16 +102,17 @@ void print_file_long_format(char *path_name, int size_width, int r)
  * @r: printing at root or dir level
  * Return: 1 if list of files are printed else 0
  */
-int print_files(Options *op, Direntry **dirent, List **dirnames, int w, int r)
+int print_files(Options *op, Direntry **dirent, List **dirnames, int *w, int r)
 {
 	Direntry *node = *dirent;
 	char *filename;
-	int a = 0;
-	int implied;
-	int hidden_file;
+	int a = 0, implied, hidden_file;
 
 	if (node == NULL)
+	{
+		free(w);
 		return (0);
+	}
 	while (node != NULL)
 	{
 		implied = 0;
@@ -134,6 +141,7 @@ int print_files(Options *op, Direntry **dirent, List **dirnames, int w, int r)
 		}
 		free(filename);
 	}
+	free(w);
 	printf("\n");
 	return (1);
 }
@@ -150,10 +158,9 @@ int print_files(Options *op, Direntry **dirent, List **dirnames, int w, int r)
 void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 {
 	Direntry *node = NULL;
-	int i = 0;
-	int no_dirs = 0, no_files = 0;
+	int i = 0, no_dirs = 0, no_files = 0;
 	char param[MAX_PATH_SIZE];
-	long size;
+	int *sizes;
 
 	param[0] = '\0';
 	node = get_files(*dirent, *dirnames);/* print_files*/
@@ -161,7 +168,8 @@ void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 		sort_direntres(&node, &dirent_cmp_size, op->reverse);
 	else
 		sort_direntres(&node, &dirent_file_cmp, op->reverse);
-	no_files = print_files(op, &node, dirnames, width(biggest_size(*dirent)), 1);
+	sizes = widths(*dirent);
+	no_files = print_files(op, &node, dirnames, sizes, 1);
 	free_direntry(node);
 	no_dirs = list_size(*dirnames);/* print_dirs*/
 	if (no_files && no_dirs)
@@ -181,8 +189,8 @@ void print_file_list(Options *op, List **dirnames, Direntry **dirent, int ec)
 			else
 				sort_direntres(&node, &dirent_cmp, op->reverse);
 			removeDuplicates(node);
-			size = biggest_size(*dirent);
-			if (print_files(op, &node, dirnames, width(size), 0) && i < no_dirs - 1)
+			sizes = widths(*dirent);
+			if (print_files(op, &node, dirnames, sizes, 0) && i < no_dirs - 1)
 				printf("\n");
 		}
 		free_direntry(node);

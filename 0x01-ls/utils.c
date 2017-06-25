@@ -41,23 +41,6 @@ int file_exist(char *filepath)
 	return (lstat(filepath, &buffer) == 0);
 }
 
-/**
- * width - Number of digits in a number
- * @n: Number
- *
- * Return: Number of digits in a number.
- */
-int width(long n)
-{
-	int count = 0;
-
-	while (n != 0)
-	{
-		n /= 10;
-		++count;
-	}
-	return (count);
-}
 
 /**
  * basename - returns only the filename for a file path
