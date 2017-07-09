@@ -1,7 +1,50 @@
 #include "_getline.h"
 
-static char buffer[READ_SIZE];
-static int bytes_read;
+static char *next;
+
+/**
+ * _strchr - Returns a pointer to the 1st occurrence of the
+ * character c in the string s
+ * @s: string to be searched in
+ * @c: character to be looked for
+ *
+ * Return: Pointer to the matched character or NULL if character is not found.
+ */
+char *_strchr(const char *s, int c)
+{
+	const char ch = c;
+
+	while (*s != ch)
+	{
+		if (*s == '\0')
+			return (NULL);
+		s++;
+	}
+	return ((char *)s);
+}
+
+/**
+ * get_pos - Returns a pointer to the 1st occurrence of the
+ * character c in the string s
+ * @s: string to be searched in
+ * @c: character to be looked for
+ *
+ * Return: Pointer to the matched character or NULL if character is not found.
+ */
+int get_pos(const char *s, int c)
+{
+	const char ch = c;
+	int i = 0;
+
+	while (*s != ch)
+	{
+		if (*s == '\0')
+			return (-1);
+		i++;
+		s++;
+	}
+	return (i);
+}
 
 /**
  * _strlen - calculate the length of a string
@@ -9,14 +52,39 @@ static int bytes_read;
  *
  * Return: Number of bytes in the string s.
  */
-unsigned int _strlen(const char *s)
+unsigned int _strlen(char *s)
 {
 	int i;
 
 	i = 0;
-	while (s[i])
+	while (s && s[i])
 		i++;
 	return (i);
+}
+
+/**
+ * _strndup - The  _strndup()  function  copies the string pointed to by src,
+ * at most n bytes of  src  are copied.
+ * to  the  buffer  pointed  to  by  dest.
+ * @s: string to be copied
+ * @n: number of bytes to be copied
+ *
+ * Return: a pointer to the destination string dest.
+ */
+char *_strndup(char *s, size_t n)
+{
+	char *result;
+	unsigned int len = _strlen(s);
+
+	if (n < len)
+		len = n;
+
+	result = (char *)malloc(len + 1);
+	if (!result)
+		return (0);
+
+	result[len] = '\0';
+	return ((char *)memcpy(result, s, len));
 }
 
 /**
@@ -30,7 +98,7 @@ char *_strapp(char *s1, char *s2)
 {
 	size_t s1_len = 0, s2_len = 0;
 	size_t out_len = 0;
-	char *out;
+	char *out = NULL;
 
 	if (s1)
 		s1_len = _strlen(s1);
@@ -38,9 +106,13 @@ char *_strapp(char *s1, char *s2)
 		s2_len = _strlen(s2);
 	out_len = s1_len + s2_len + 1;
 	out = malloc(out_len);
-	memcpy(out, s1, s1_len);
-	memcpy(out + s1_len, s2, s2_len + 1);
+	if (out != NULL)
+	{
+		memcpy(out, s1, s1_len);
+		memcpy(out + s1_len, s2, s2_len + 1);
+	}
 	free(s1);
+	free(s2);
 	return (out);
 }
 
@@ -54,41 +126,36 @@ char *_strapp(char *s1, char *s2)
  */
 char *_getline(const int fd)
 {
-	char *lineptr = NULL;
-	char s[READ_SIZE];
-	int i = 0, d = 0;
+	char buffer[READ_SIZE + 1];
+	char *token = NULL;
+	int bytes_read, pos;
 
-	if (bytes_read)
+	if (fd == -1)
+		free(next);
+	else
 	{
-		while (i < READ_SIZE && buffer[i] != '\n')
-			i++;
-		/* copy from s2 line from previous buffer*/
-		strcpy(s, buffer + i + 1);
-		s[_strlen(buffer + i + 1)] = '\0';
-		lineptr = _strapp(lineptr, s);
-	}
-	do {
-		/*consider a block */
 		bytes_read = read(fd, buffer, READ_SIZE);
-		if (bytes_read)
+		if (bytes_read >= 0)
 		{
-			i = 0;
-			while (i < READ_SIZE && buffer[i] != '\n' && buffer[i] != EOF)
-				i++;
-			s[0] = '\0';
-			/* copy till s2 line*/
-			strncpy(s, buffer, i);
-			s[i] = '\0';
-			lineptr = _strapp(lineptr, s);
+			if (next)
+				next = _strapp(strdup(next), _strndup(buffer, bytes_read));
+			else
+				next = _strapp(next, _strndup(buffer, bytes_read));
+			if (next != NULL)
+			{
+				do {
+					pos = get_pos(next, '\n');
+					if (pos >= 0)
+					{
+						token = _strndup(next, pos);
+						next = next + pos + 1;
+						return (token);
+					}
+					bytes_read = read(fd, buffer, READ_SIZE);
+					next = _strapp(strdup(next), _strndup(buffer, bytes_read));
+				} while (next != NULL && bytes_read);
+			}
 		}
-	} while (bytes_read > 0 && buffer[i] != '\n');
-	if (bytes_read == 0 && lineptr)
-	{
-		d = _strlen(lineptr);
-		/* check end of previous buffer if it has s2line*/
-		if (lineptr[d - 1] == '\n')
-			lineptr[d - 1] = '\0';
-		buffer[0] = '\0';
 	}
-	return (lineptr);
+	return (NULL);
 }
