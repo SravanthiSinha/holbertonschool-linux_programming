@@ -141,7 +141,7 @@ char *_getline(const int fd)
 				next = _strapp(strdup(next), _strndup(buffer, bytes_read));
 			else
 				next = _strapp(next, _strndup(buffer, bytes_read));
-			if (next != NULL)
+			if (next && _strlen(next))
 			{
 				do {
 					pos = get_pos(next, '\n');
