@@ -128,7 +128,7 @@ char *_strapp(char *s1, char *s2)
 char *_getline(const int fd)
 {
 	char buffer[READ_SIZE + 1];
-	char *token = NULL, *new = NULL, *n = "\0";
+	char *token = NULL, *new = NULL, *n = "\0", *v_buf = NULL;
 	int bytes_read = 0, pos = 0;
 
 	if (fd != -1)
@@ -137,10 +137,7 @@ char *_getline(const int fd)
 		bytes_read = read(fd, buffer, READ_SIZE);
 		if (eof != -1)
 		{
-			if (next)
-				next = _strapp(strdup(next), _strndup(buffer, bytes_read));
-			else
-				next = _strapp(next, _strndup(buffer, bytes_read));
+			next = _strapp(next, v_buf = _strndup(buffer, bytes_read));
 			if (next != NULL)
 			{
 				do {
@@ -155,16 +152,19 @@ char *_getline(const int fd)
 					}
 					memset(buffer, 0, sizeof(buffer));
 					bytes_read = read(fd, buffer, READ_SIZE);
-					next = _strapp(strdup(next), _strndup(buffer, bytes_read));
+					next = _strapp(next, v_buf = _strndup(buffer, bytes_read));
 				} while (next != NULL && bytes_read && _strchr(next, EOF) == NULL);
 				if (next && _strlen(next))
 				{
-					next = _strapp(strdup(next), strdup(n));
+					v_buf =  strdup(n);
+					next = _strapp(next, v_buf);
 					eof = -1;
 					return (strdup(next));
 				}
 			}
 		}
+		if (next)
+			free(next);
 	}
 	return (NULL);
 }
