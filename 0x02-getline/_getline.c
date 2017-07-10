@@ -108,7 +108,8 @@ char *_strapp(char *s1, char *s2)
 	out = malloc(out_len);
 	if (out != NULL)
 	{
-		memcpy(out, s1, s1_len);
+		if (s1)
+			memcpy(out, s1, s1_len);
 		memcpy(out + s1_len, s2, s2_len + 1);
 	}
 	free(s1);
@@ -127,13 +128,14 @@ char *_strapp(char *s1, char *s2)
 char *_getline(const int fd)
 {
 	char buffer[READ_SIZE + 1];
-	char *token = NULL;
-	int bytes_read, pos;
+	char *token = NULL, *new = NULL;
+	int bytes_read = 0, pos = 0;
 
 	if (fd == -1)
 		free(next);
 	else
 	{
+		memset(buffer, 0, sizeof(buffer));
 		bytes_read = read(fd, buffer, READ_SIZE);
 		if (bytes_read >= 0)
 		{
@@ -148,9 +150,12 @@ char *_getline(const int fd)
 					if (pos >= 0)
 					{
 						token = _strndup(next, pos);
-						next = next + pos + 1;
+						new = strdup(next + pos + 1);
+						free(next);
+						next = new;
 						return (token);
 					}
+					memset(buffer, 0, sizeof(buffer));
 					bytes_read = read(fd, buffer, READ_SIZE);
 					next = _strapp(strdup(next), _strndup(buffer, bytes_read));
 				} while (next != NULL && bytes_read);
