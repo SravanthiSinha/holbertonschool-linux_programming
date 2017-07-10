@@ -1,7 +1,7 @@
 #include "_getline.h"
 
 static char *next;
-
+static int eof;
 /**
  * _strchr - Returns a pointer to the 1st occurrence of the
  * character c in the string s
@@ -128,16 +128,14 @@ char *_strapp(char *s1, char *s2)
 char *_getline(const int fd)
 {
 	char buffer[READ_SIZE + 1];
-	char *token = NULL, *new = NULL;
+	char *token = NULL, *new = NULL, *n = "\0";
 	int bytes_read = 0, pos = 0;
 
-	if (fd == -1)
-		free(next);
-	else
+	if (fd != -1)
 	{
 		memset(buffer, 0, sizeof(buffer));
 		bytes_read = read(fd, buffer, READ_SIZE);
-		if (bytes_read >= 0)
+		if (eof != -1)
 		{
 			if (next)
 				next = _strapp(strdup(next), _strndup(buffer, bytes_read));
@@ -158,7 +156,13 @@ char *_getline(const int fd)
 					memset(buffer, 0, sizeof(buffer));
 					bytes_read = read(fd, buffer, READ_SIZE);
 					next = _strapp(strdup(next), _strndup(buffer, bytes_read));
-				} while (next != NULL && bytes_read);
+				} while (next != NULL && bytes_read && _strchr(next, EOF) == NULL);
+				if (next && _strlen(next))
+				{
+					next = _strapp(strdup(next), strdup(n));
+					eof = -1;
+					return (strdup(next));
+				}
 			}
 		}
 	}
