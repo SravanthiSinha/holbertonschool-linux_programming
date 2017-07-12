@@ -1,26 +1,27 @@
 #include "_getline.h"
 
-static char *next;
-static int eof;
-/**
- * _strchr - Returns a pointer to the 1st occurrence of the
- * character c in the string s
- * @s: string to be searched in
- * @c: character to be looked for
- *
- * Return: Pointer to the matched character or NULL if character is not found.
- */
-char *_strchr(const char *s, int c)
-{
-	const char ch = c;
+static stream_info streams[MAX_FILE_DESCRIPTOR];
 
-	while (*s != ch)
+/**
+ * free_stash - frees everything and reset all static variables if fd == -1
+ * @fd: the file descriptor to read from.
+ */
+void free_stash(const int fd)
+{
+	long i;
+
+	if (fd == -1)
 	{
-		if (*s == '\0')
-			return (NULL);
-		s++;
+		for (i = 0; i < MAX_FILE_DESCRIPTOR; i++)
+		{
+			if (streams[i].next != NULL)
+			{
+				streams[i].next = NULL;
+				free(streams[i].next);
+			}
+		}
+		memset(streams, 0, sizeof(stream_info));
 	}
-	return ((char *)s);
 }
 
 /**
@@ -112,8 +113,10 @@ char *_strapp(char *s1, char *s2)
 			memcpy(out, s1, s1_len);
 		memcpy(out + s1_len, s2, s2_len + 1);
 	}
-	free(s1);
-	free(s2);
+	if (s1)
+		free(s1);
+	if (s2)
+		free(s2);
 	return (out);
 }
 
@@ -127,44 +130,49 @@ char *_strapp(char *s1, char *s2)
  */
 char *_getline(const int fd)
 {
-	char buffer[READ_SIZE + 1];
-	char *token = NULL, *new = NULL, *n = "\0";
+	char buffer[READ_SIZE + 1], *token = NULL, *new, *v_buf = NULL;
 	int bytes_read = 0, pos = 0;
 
 	if (fd != -1)
 	{
 		memset(buffer, 0, sizeof(buffer));
 		bytes_read = read(fd, buffer, READ_SIZE);
-		if (eof != -1 && bytes_read >= 0)
+		if (streams[fd].eof != -1 && bytes_read >= 0)
 		{
-			if (next)
-				next = _strapp(strdup(next), _strndup(buffer, bytes_read));
-			else
-				next = _strapp(next, _strndup(buffer, bytes_read));
-			if (next && _strlen(next))
+			streams[fd].next =
+				_strapp(streams[fd].next, v_buf = _strndup(buffer, bytes_read));
+			if (streams[fd].next != NULL)
 			{
 				do {
-					pos = get_pos(next, '\n');
+					pos = get_pos(streams[fd].next, '\n');
 					if (pos >= 0)
 					{
-						token = _strndup(next, pos);
-						new = strdup(next + pos + 1);
-						free(next);
-						next = new;
+						token = _strndup(streams[fd].next, pos);
+						new = strdup(streams[fd].next + pos + 1);
+						free(streams[fd].next);
+						streams[fd].next = new;
 						return (token);
 					}
 					memset(buffer, 0, sizeof(buffer));
 					bytes_read = read(fd, buffer, READ_SIZE);
-					next = _strapp(strdup(next), _strndup(buffer, bytes_read));
-				} while (next != NULL && bytes_read && _strchr(next, EOF) == NULL);
-				if (next && _strlen(next))
+					streams[fd].next =
+						_strapp(streams[fd].next, v_buf = _strndup(buffer, bytes_read));
+				} while (streams[fd].next != NULL && bytes_read &&
+					 get_pos(streams[fd].next, EOF) == -1);
+				if (streams[fd].next && _strlen(streams[fd].next))
 				{
-					next = _strapp(strdup(next), strdup(n));
-					eof = -1;
-					return (strdup(next));
+					streams[fd].next = _strapp(streams[fd].next, v_buf = strdup(n));
+					streams[fd].eof = -1;
+					return (strdup(streams[fd].next));
 				}
 			}
 		}
+		if (streams[fd].next)
+		{
+			free(streams[fd].next);
+			streams[fd].next = NULL;
+		}
 	}
+	free_stash(fd);
 	return (NULL);
 }
