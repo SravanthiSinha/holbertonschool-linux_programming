@@ -103,14 +103,15 @@ void freeStash(StreamsInfo *ss, const int fd)
 	{
 		for (i = 0; i < ss->size; i++)
 		{
-			if (ss->streams[i].buffer)
-				free(ss->streams[i].buffer);
+			free(ss->streams[i].buffer);
 			ss->streams[i].eof = 0;
 			ss->streams[i].buffer = NULL;
 		}
 		free(ss->streams);
 		ss->streams = NULL;
-		ss->size = arraySet = 0;
+		ss->size = 0;
+		ss = NULL;
+		arraySet = 0;
 	}
 }
 
@@ -136,11 +137,11 @@ int initializeStash(StreamsInfo *ss, const int fd, int op)
 		{
 			ss->streams[i].buffer = NULL;
 			ss->streams[i].eof = 0;
-			ss->size = (size_t)fd;
 		}
+		ss->size = (size_t)fd;
 		arraySet = 1;
 	}
-/* reallocate Array*/
+	/* reallocate Array*/
 	if (op == 1)
 	{
 		if (ss->size < (size_t)fd)
@@ -177,9 +178,8 @@ char *_getline(const int fd)
 	{
 		if (!arraySet && (initializeStash(&ss, fd + 1, 0) != SUCCESS))
 			return (NULL);
-		if (fd > (int)ss.size)
-			if (initializeStash(&ss, fd, 1) != SUCCESS)
-				return (NULL);
+		if (initializeStash(&ss, fd + 1, 1) != SUCCESS)
+			return (NULL);
 		while (ss.streams[fd].eof == 0)
 		{
 			if (ss.streams[fd].buffer)
@@ -205,7 +205,7 @@ char *_getline(const int fd)
 					return (strdup(ss.streams[fd].buffer));
 			}
 			else if (!ss.streams[fd].buffer)
-				return (NULL);
+				break;
 		}
 	}
 	freeStash(&ss, fd);

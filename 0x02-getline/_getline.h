@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define READ_SIZE 10
+#define READ_SIZE 1024
 #define c_buff(buffer) memset(buffer, 0, sizeof(buffer))
 #define SUCCESS 0
 #define MALLOC_ERROR 1
