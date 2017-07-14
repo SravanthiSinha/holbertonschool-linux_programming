@@ -1,123 +1,163 @@
 #include "_getline.h"
 
-static stream_info streams[MAX_FILE_DESCRIPTOR];
-
-/**
- * free_stash - frees everything and reset all static variables if fd == -1
- * @fd: the file descriptor to read from.
- */
-void free_stash(const int fd)
-{
-	long i;
-
-	if (fd == -1)
-	{
-		for (i = 0; i < MAX_FILE_DESCRIPTOR; i++)
-		{
-			if (streams[i].next != NULL)
-			{
-				streams[i].next = NULL;
-				free(streams[i].next);
-			}
-		}
-		memset(streams, 0, sizeof(stream_info));
-	}
-}
+static int arraySet;
+static StreamsInfo ss;
 
 /**
  * get_pos - Returns a pointer to the 1st occurrence of the
  * character c in the string s
  * @s: string to be searched in
  * @c: character to be looked for
+ * @f_len : if f_len == 1 length of the string is returned
  *
  * Return: Pointer to the matched character or NULL if character is not found.
  */
-int get_pos(const char *s, int c)
+int get_pos(char *s, int c, int f_len)
 {
-	const char ch = c;
+	char ch = c;
 	int i = 0;
 
-	while (*s != ch)
+	if (!f_len)
 	{
-		if (*s == '\0')
-			return (-1);
-		i++;
-		s++;
+		while (*s != ch)
+		{
+			if (*s == '\0')
+				return (-1);
+			i++;
+			s++;
+		}
+	}
+	else
+	{
+		while (s && s[i])
+			i++;
 	}
 	return (i);
 }
 
 /**
- * _strlen - calculate the length of a string
- * @s: This is the string whose length has to be calculated.
- *
- * Return: Number of bytes in the string s.
- */
-unsigned int _strlen(char *s)
-{
-	int i;
-
-	i = 0;
-	while (s && s[i])
-		i++;
-	return (i);
-}
-
-/**
- * _strndup - The  _strndup()  function  copies the string pointed to by src,
- * at most n bytes of  src  are copied.
- * to  the  buffer  pointed  to  by  dest.
- * @s: string to be copied
- * @n: number of bytes to be copied
- *
- * Return: a pointer to the destination string dest.
- */
-char *_strndup(char *s, size_t n)
-{
-	char *result;
-	unsigned int len = _strlen(s);
-
-	if (n < len)
-		len = n;
-
-	result = (char *)malloc(len + 1);
-	if (!result)
-		return (0);
-
-	result[len] = '\0';
-	return ((char *)memcpy(result, s, len));
-}
-
-/**
- * _strapp - Appends the s2 string to previous with s2 allocation
+ * strapp - Appends the s2 string to previous with s2 allocation
  * @s1: old String
  * @s2: new String
- *
+ * @s2_len : length of string 2
  * Return: Created string with  old and new string concatinated.
  */
-char *_strapp(char *s1, char *s2)
+char *strapp(char *s1, char *s2, int s2_len)
 {
-	size_t s1_len = 0, s2_len = 0;
-	size_t out_len = 0;
+	size_t s1_len = 0;
+	size_t out_size = 0;
 	char *out = NULL;
 
 	if (s1)
-		s1_len = _strlen(s1);
-	if (s2)
-		s2_len = _strlen(s2);
-	out_len = s1_len + s2_len + 1;
-	out = malloc(out_len);
+		s1_len = get_pos(s1, '\0', 1);
+	out_size = s1_len + s2_len + 1;
+	out = malloc(out_size);
 	if (out != NULL)
 	{
 		if (s1)
 			memcpy(out, s1, s1_len);
-		memcpy(out + s1_len, s2, s2_len + 1);
+		if (s2)
+			memcpy(out + s1_len, s2, s2_len);
+		out[out_size - 1] = 0;
+		if (s1)
+			free(s1);
 	}
-	if (s1)
-		free(s1);
-	if (s2)
-		free(s2);
 	return (out);
+}
+
+/**
+ * _realloc - function changes the size of the memory block pointed to by
+ * ptr to size bytes
+ * @ptr: the pointer to be reallocted
+ * @size: the no of bytes to be reallocted
+ * @msize: the no of bytes to be  previously allocted
+ * Return: a pointer to the newly allocated memory.
+ */
+void *_realloc(void *ptr, size_t size, size_t msize)
+{
+	void *newptr = NULL;
+
+	if (size <= msize)
+		return (ptr);
+	newptr = malloc(size);
+	if (newptr)
+	{
+		memcpy(newptr, ptr, msize);
+		free(ptr);
+		return (newptr);
+	}
+	return (NULL);
+}
+
+/**
+ * freeStash - frees stash
+ * @fd: the file descriptor to read from.
+ * @ss: All the streams
+ */
+void freeStash(StreamsInfo *ss, const int fd)
+{
+	size_t i = 0;
+
+	/* free_stash*/
+	if (fd == -1)
+	{
+		for (i = 0; i < ss->size; i++)
+		{
+			if (ss->streams[i].buffer)
+				free(ss->streams[i].buffer);
+			ss->streams[i].eof = 0;
+			ss->streams[i].buffer = NULL;
+		}
+		free(ss->streams);
+		ss->streams = NULL;
+		ss->size = arraySet = 0;
+	}
+}
+
+/**
+ * initializeStash - handles stash
+ * @ss: All the streams
+ * @fd: the file descriptor to read from.
+ * @op: operation to be carried : 0 - intialise array, 1- reallocate array
+ * 2 - free stash
+ * Return: 1 on Success an 0 on failure
+ */
+int initializeStash(StreamsInfo *ss, const int fd, int op)
+{
+	size_t i = 0;
+
+	/* initialize Array*/
+	if (op == 0)
+	{
+		ss->streams = (StreamInfo *)malloc(fd * sizeof(StreamInfo));
+		if (!ss->streams)
+			return (MALLOC_ERROR);
+		for (i = 0; i < (size_t)fd; i++)
+		{
+			ss->streams[i].buffer = NULL;
+			ss->streams[i].eof = 0;
+			ss->size = (size_t)fd;
+		}
+		arraySet = 1;
+	}
+/* reallocate Array*/
+	if (op == 1)
+	{
+		if (ss->size < (size_t)fd)
+		{
+			ss->streams = (StreamInfo *)_realloc(ss->streams,
+							     ss->size * sizeof(StreamInfo) * 2, ss->size * sizeof(StreamInfo));
+			if (!ss->streams)
+				return (MALLOC_ERROR);
+			for (i = ss->size; i < ss->size * 2; i++)
+			{
+				ss->streams[i].buffer = NULL;
+				ss->streams[i].eof = 0;
+			}
+			ss->size = ss->size * 2;
+		}
+	}
+	return (SUCCESS);
 }
 
 /**
@@ -130,49 +170,44 @@ char *_strapp(char *s1, char *s2)
  */
 char *_getline(const int fd)
 {
-	char buffer[READ_SIZE + 1], *token = NULL, *new, *v_buf = NULL;
+	char buff[READ_SIZE + 1], *token = NULL, *new = NULL;
 	int bytes_read = 0, pos = 0;
 
 	if (fd != -1)
 	{
-		memset(buffer, 0, sizeof(buffer));
-		bytes_read = read(fd, buffer, READ_SIZE);
-		if (streams[fd].eof != -1 && bytes_read >= 0)
+		if (!arraySet && (initializeStash(&ss, fd + 1, 0) != SUCCESS))
+			return (NULL);
+		if (fd > (int)ss.size)
+			if (initializeStash(&ss, fd, 1) != SUCCESS)
+				return (NULL);
+		while (ss.streams[fd].eof == 0)
 		{
-			streams[fd].next =
-				_strapp(streams[fd].next, v_buf = _strndup(buffer, bytes_read));
-			if (streams[fd].next != NULL)
+			if (ss.streams[fd].buffer)
 			{
-				do {
-					pos = get_pos(streams[fd].next, '\n');
-					if (pos >= 0)
-					{
-						token = _strndup(streams[fd].next, pos);
-						new = strdup(streams[fd].next + pos + 1);
-						free(streams[fd].next);
-						streams[fd].next = new;
-						return (token);
-					}
-					memset(buffer, 0, sizeof(buffer));
-					bytes_read = read(fd, buffer, READ_SIZE);
-					streams[fd].next =
-						_strapp(streams[fd].next, v_buf = _strndup(buffer, bytes_read));
-				} while (streams[fd].next != NULL && bytes_read &&
-					 get_pos(streams[fd].next, EOF) == -1);
-				if (streams[fd].next && _strlen(streams[fd].next))
+				pos = get_pos(ss.streams[fd].buffer, '\n', 0);
+				if (pos >= 0)
 				{
-					streams[fd].next = _strapp(streams[fd].next, v_buf = strdup(n));
-					streams[fd].eof = -1;
-					return (strdup(streams[fd].next));
+					token = strapp(NULL, ss.streams[fd].buffer, pos);
+					new = strdup(ss.streams[fd].buffer + pos + 1);
+					free(ss.streams[fd].buffer);
+					ss.streams[fd].buffer = new;
+					return (token);
 				}
 			}
-		}
-		if (streams[fd].next)
-		{
-			free(streams[fd].next);
-			streams[fd].next = NULL;
+			bytes_read = read(fd, c_buff(buff), READ_SIZE);
+			if (bytes_read < 0)
+				return (NULL);
+			ss.streams[fd].buffer = strapp(ss.streams[fd].buffer, buff, bytes_read);
+			if (bytes_read == 0 && ss.streams[fd].buffer &&
+			    get_pos(ss.streams[fd].buffer, EOF, 0) == -1) {
+				ss.streams[fd].eof = -1;
+				if (get_pos(ss.streams[fd].buffer, '\0', 1))
+					return (strdup(ss.streams[fd].buffer));
+			}
+			else if (!ss.streams[fd].buffer)
+				return (NULL);
 		}
 	}
-	free_stash(fd);
+	freeStash(&ss, fd);
 	return (NULL);
 }
