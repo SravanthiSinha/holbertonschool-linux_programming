@@ -35,6 +35,13 @@ typedef struct StreamsInfo
 	size_t size;
 } StreamsInfo;
 
+int getPosition(char *s, int c, int f_len);
+char *strapp(char *s1, char *s2, int s2_len);
+void *_realloc(void *ptr, size_t size, size_t msize);
+
+int initializeStash(StreamsInfo *ss, const int fd);
+void freeStash(StreamsInfo *ss, const int fd);
+
 char *_getline(const int fd);
 
 #endif
