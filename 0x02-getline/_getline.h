@@ -8,39 +8,33 @@
 
 #define READ_SIZE 1024
 #define c_buff(buffer) memset(buffer, 0, sizeof(buffer))
-#define SUCCESS 0
-#define MALLOC_ERROR 1
-#define ERROR 2
 
 /**
- * struct StreamInfo - stream
- * @eof : eof flag for each fd
- * @buffer : The buffer for each fd
+ * struct stream_s - used to store all related info of a particular stream.
+ * @fd: the file descriptor
+ * @buff: The buff for each fd
+ * @buff_size: size of the buff
+ * @eof: eof flag for each fd
+ * @next: pointer to next stream
  * A value is not unique. It can correspond to several keys
  */
-typedef struct StreamInfo
+typedef struct stream_s
 {
-	char *buffer;
+	int fd;
+	char *buff;
+	int buff_size;
 	int eof;
+	struct stream_s *next;
 } StreamInfo;
 
-/**
- * struct StreamsInfo - All the streams
- * @size : The size of the array *
- * @streams : An array of streams of size @size
- */
-typedef struct StreamsInfo
-{
-	StreamInfo *streams;
-	size_t size;
-} StreamsInfo;
 
-int getPosition(char *s, int c, int f_len);
-char *strapp(char *s1, char *s2, int s2_len);
-void *_realloc(void *ptr, size_t size, size_t msize);
 
-int initializeStash(StreamsInfo *ss, const int fd);
-void freeStash(StreamsInfo *ss, const int fd);
+StreamInfo *initialize_get_Stash(StreamInfo **ss, int fd, int *error_occured);
+void deleteStash(StreamInfo **ss, StreamInfo *stream);
+void setStash(StreamInfo *stream, int *error_occured);
+void freeStash(StreamInfo **ss);
+
+char *get_update_Stash(StreamInfo *stream, int at, int *error_occured);
 
 char *_getline(const int fd);
 

@@ -1,6 +1,9 @@
-#include "_getline.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
-static StreamsInfo ss = {NULL, 0};
+#include "_getline.h"
 
 /**
  * _getline - reads an entire line from a file descriptor.
@@ -12,179 +15,174 @@ static StreamsInfo ss = {NULL, 0};
  */
 char *_getline(const int fd)
 {
-	char buff[READ_SIZE + 1], *token = NULL, *new = NULL;
-	int bytes_read = 0, pos = 0;
+	static StreamInfo *ss;
+	StreamInfo *stream = NULL;
+	char *lineptr = NULL;
+	int error_occured = 0, pos = 0;
 
-	if (fd != -1)
-	{
-		if (initializeStash(&ss, fd + 1) != SUCCESS)
-			return (NULL);
-		while (ss.streams[fd].eof == 0)
-		{
-			if (ss.streams[fd].buffer)
-			{
-				pos = getPosition(ss.streams[fd].buffer, '\n', 0);
-				if (pos >= 0)
-				{
-					token = strapp(NULL, ss.streams[fd].buffer, pos);
-					new = strdup(ss.streams[fd].buffer + pos + 1);
-					free(ss.streams[fd].buffer);
-					ss.streams[fd].buffer = new;
-					return (token);
-				}
-			}
-			bytes_read = read(fd, c_buff(buff), READ_SIZE);
-			if (bytes_read < 0)
-				return (NULL);
-			ss.streams[fd].buffer = strapp(ss.streams[fd].buffer, buff, bytes_read);
-			if (bytes_read == 0 && ss.streams[fd].buffer &&
-			    getPosition(ss.streams[fd].buffer, EOF, 0) == -1) {
-				ss.streams[fd].eof = -1;
-				if (getPosition(ss.streams[fd].buffer, '\0', 1))
-					return (strdup(ss.streams[fd].buffer));
-			}
-			else if (!ss.streams[fd].buffer)
-				break;
-		}
-	}
-	freeStash(&ss, fd);
-	return (NULL);
-}
-
-/**
- * initializeStash - handles stash
- * @ss: All the streams
- * @fd: the file descriptor to read from.
- * Return: 1 on Success and 0 on failure
- */
-int initializeStash(StreamsInfo *ss, const int fd)
-{
-	int i = 0;
-
-	if (ss->size < (size_t)fd)
-	{
-		ss->streams = (StreamInfo *)_realloc(ss->streams,
-						     fd * sizeof(StreamInfo) * 2, ss->size * sizeof(StreamInfo));
-		if (!ss->streams)
-			return (MALLOC_ERROR);
-		for (i = ss->size; i < (fd * 2); i++)
-		{
-			ss->streams[i].buffer = NULL;
-			ss->streams[i].eof = 0;
-		}
-		ss->size = fd * 2;
-	}
-	return (SUCCESS);
-}
-
-
-/**
- * getPosition - Returns a pointer to the 1st occurrence of the
- * character c in the string s
- * @s: string to be searched in
- * @c: character to be looked for
- * @f_len : if f_len == 1 length of the string is returned
- *
- * Return: Pointer to the matched character or NULL if character is not found.
- */
-int getPosition(char *s, int c, int f_len)
-{
-	char ch = c;
-	int i = 0;
-
-	if (!f_len)
-	{
-		while (*s != ch)
-		{
-			if (*s == '\0')
-				return (-1);
-			i++;
-			s++;
-		}
-	}
+	if (fd == -1)
+		freeStash(&ss);
 	else
 	{
-		while (s && s[i])
-			i++;
+		stream = initialize_get_Stash(&ss, fd, &error_occured);
+		while (!lineptr && stream && !error_occured)
+		{
+			pos = 0;
+			/* get the position of occurence of newline in the buffer */
+			while ((pos < stream->buff_size) && (stream->buff[pos] != '\n'))
+				++pos;
+			/* get the line and update the buffer */
+			if ((pos != stream->buff_size) || stream->eof)
+				lineptr = get_update_Stash(stream, pos, &error_occured);
+			if (stream->eof == 0)
+				setStash(stream, &error_occured);
+			error_occured |= (stream->eof && (stream->buff_size == 0));
+		}
+		if (error_occured && (lineptr == NULL))
+			deleteStash(&ss, stream);
 	}
-	return (i);
+	return (lineptr);
 }
+
+/**
+ * initializeStash - INtailise the stash if not else retirn the stored stash
+ * @ss: All the streams
+ * @fd: the file descriptor to read from.
+ * @error_occured: flag to indicate malloc errors or any errors.
+ * Return:  a stream realted to fd.
+ */
+StreamInfo *initialize_get_Stash(StreamInfo **ss, int fd, int *error_occured)
+{
+	StreamInfo *stream = NULL;
+
+	stream = *ss;
+	while (stream && stream->fd != fd)
+		stream = stream->next;
+	if (!stream)
+	{
+		stream = malloc(sizeof(StreamInfo));
+		*error_occured |= stream == NULL;
+		if (stream)
+		{
+			memset(stream, 0, sizeof(*stream));
+			stream->fd = fd;
+			stream->next = *ss;
+			*ss = stream;
+		}
+	}
+	return (stream);
+}
+
+/**
+ * setStash - store thestash from the read
+ * @stream: The stream to be read
+ * @error_occured: flag to indicate malloc errors or any errors.
+ */
+void setStash(StreamInfo *stream, int *error_occured)
+{
+	char buff_read[READ_SIZE];
+	int bytes_read;
+	char *str;
+
+	bytes_read = read(stream->fd, buff_read, READ_SIZE);
+	if (bytes_read <= 0)
+		stream->eof = 1;
+	else
+	{
+		str = malloc(stream->buff_size + bytes_read);
+		*error_occured |= (str == NULL);
+		if (str)
+		{
+			if (stream->buff_size)
+				memcpy(str, stream->buff, stream->buff_size);
+			memcpy(str + stream->buff_size, buff_read, bytes_read);
+		}
+		free(stream->buff);
+		stream->buff = str;
+		stream->buff_size += bytes_read;
+	}
+}
+
+/**
+ * get_update_Stash - Returns a string till newline.
+ *	and reset the stash with the buffer left.
+ * @stream: stream to be searched in
+ * @pos: the index where newline occured previously.
+ * @error_occured: flag to indicate malloc errors or any errors.
+ *
+ * Return: A string where till newline occured.
+ */
+char *get_update_Stash(StreamInfo *stream, int pos, int *error_occured)
+{
+	char *str = NULL, *next = NULL;
+	int len = stream->buff_size - pos - 1;
+
+	if (stream->buff_size)
+	{
+		str = malloc(pos + 1);
+		*error_occured |= str == NULL;
+		if (str)
+		{
+			memcpy(str, stream->buff, pos);
+			str[pos] = 0;
+		}
+	}
+	stream->buff_size = 0;
+	if (len > 0)
+	{
+		next = malloc(len);
+		*error_occured |= next != NULL;
+		if (next)
+			memcpy(next, stream->buff + pos + 1, len);
+		stream->buff_size = len;
+	}
+	free(stream->buff);
+	stream->buff = next;
+	return (str);
+}
+
 
 /**
  * freeStash - frees stash
- * @fd: the file descriptor to read from.
  * @ss: All the streams
  */
-void freeStash(StreamsInfo *ss, const int fd)
+void freeStash(StreamInfo **ss)
 {
-	size_t i = 0;
+	StreamInfo *stream = *ss;
+	StreamInfo *tmp;
 
-	/* free_stash*/
-	if (fd == -1)
+	while (stream)
 	{
-		for (i = 0; i < ss->size; i++)
+		tmp = stream->next;
+		free(stream->buff);
+		free(stream);
+		stream = tmp;
+	}
+	*ss = NULL;
+}
+
+/**
+ * deleteStash - deletes the stream from streams @ss.
+ * @ss: All the streams
+ * @stream: stream to be removed from @ss.
+ *
+ */
+void deleteStash(StreamInfo **ss, StreamInfo *stream)
+{
+	StreamInfo *s;
+
+	if (stream)
+	{
+		if (stream == *ss)
+			*ss = stream->next;
+		else
 		{
-			free(ss->streams[i].buffer);
-			ss->streams[i].buffer = NULL;
-			ss->streams[i].eof = 0;
+			s = *ss;
+			while (s->next != stream)
+				s = s->next;
+			s->next = stream->next;
 		}
-		free(ss->streams);
-		ss->streams = NULL;
-		ss->size = 0;
-		ss = NULL;
+		free(stream->buff);
+		free(stream);
 	}
-}
-
-/**
- * strapp - Appends the s2 string to previous with s2 allocation
- * @s1: old String
- * @s2: new String
- * @s2_len : length of string 2
- * Return: Created string with  old and new string concatinated.
- */
-char *strapp(char *s1, char *s2, int s2_len)
-{
-	size_t s1_len = 0;
-	size_t out_size = 0;
-	char *out = NULL;
-
-	if (s1)
-		s1_len = getPosition(s1, '\0', 1);
-	out_size = s1_len + s2_len;
-	out = malloc(out_size + 1);
-	if (out != NULL)
-	{
-		if (s1)
-			memcpy(out, s1, s1_len);
-		if (s2)
-			memcpy(out + s1_len, s2, s2_len);
-		out[out_size] = 0;
-		if (s1)
-			free(s1);
-	}
-	return (out);
-}
-
-/**
- * _realloc - function changes the size of the memory block pointed to by
- * ptr to size bytes
- * @ptr: the pointer to be reallocted
- * @size: the no of bytes to be reallocted
- * @msize: the no of bytes to be  previously allocted
- * Return: a pointer to the newly allocated memory.
- */
-void *_realloc(void *ptr, size_t size, size_t msize)
-{
-	void *newptr = NULL;
-
-	if (size <= msize)
-		return (ptr);
-	newptr = malloc(size);
-	if (newptr)
-	{
-		memcpy(newptr, ptr, msize);
-		free(ptr);
-		return (newptr);
-	}
-	return (NULL);
 }
