@@ -28,6 +28,7 @@ void all_in_one(void)
 	act.sa_sigaction = &sigaction_handler;
 	act.sa_flags = SA_SIGINFO;
 	for (i = 1; i < 32; i++)
-		if (sigaction(i, &act, NULL) < 0)
-			return;
+	{
+		sigaction(i, &act, NULL);
+	}
 }
