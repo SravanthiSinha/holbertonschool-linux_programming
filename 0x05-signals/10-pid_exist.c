@@ -1,5 +1,5 @@
-#include <unistd.h>
-
+#include <errno.h>
+#include <signal.h>
 /**
  * pid_exist - a function that tests if a process exists, given its PID.
  * @pid: pid to look for
@@ -7,5 +7,5 @@
  */
 int pid_exist(pid_t pid)
 {
-	return (getpgid(pid) >= 0);
+	return (kill(pid, 0) == 0 ? 1 : (errno == ESRCH ? 0 : 1));
 }
