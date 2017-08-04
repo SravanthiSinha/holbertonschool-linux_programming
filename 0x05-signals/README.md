@@ -47,7 +47,8 @@
 
   File: 10-pid_exist.c
 
-* TASK 11: A blog post about signals
+* TASK 11: A blog post about [signals](https://medium.com/@SravanthiSinha/lets-signal-b0378c9a9928)
+ 
 
 * TASK 12: A function that sets up a single handler for all the signals
 
