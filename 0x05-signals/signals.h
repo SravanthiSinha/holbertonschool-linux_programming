@@ -17,4 +17,5 @@ int sigset_init(sigset_t *set, int *signals);
 int signals_block(int *signals);
 int signals_unblock(int *signals);
 int handle_pending(void (*handler)(int));
+void print_hello(int);
 #endif
