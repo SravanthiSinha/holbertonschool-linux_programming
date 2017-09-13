@@ -7,6 +7,11 @@ Usage: 0-hreadelf elf_filename
 ```
 standard output, error output and status are exact same as readelf -W -h
 
+1-hreadelf - a program that displays the information contained in the ELF sections' headers of an ELF file.
+```
+Usage: 1-hreadelf elf_filename
+```
+Your standard output, error output and status should be the exact same as readelf -W -S
 
 ## Useful Resources:
 * man elf(5), man readelf(1)
@@ -16,4 +21,4 @@ standard output, error output and status are exact same as readelf -W -h
 * [The ELF Object File Format: Introduction ](http://www.linuxjournal.com/article/1059)
 * [The ELF Object File Format by Dissection](http://www.linuxjournal.com/node/1060/print)
 * [ELF_Tutorial](http://wiki.osdev.org/ELF_Tutorial#ELF_Data_Types)
-*[FILE Format] (https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-73445)
+* [FILE Format](https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-73445)

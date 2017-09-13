@@ -11,9 +11,12 @@ char *get_elf_class(unsigned int elf_class)
 
 	switch (elf_class)
 	{
-	case ELFCLASSNONE:		return (strdup("none"));
-	case ELFCLASS32:		return (strdup("ELF32"));
-	case ELFCLASS64:		return (strdup("ELF64"));
+	case ELFCLASSNONE:
+		return (strdup("none"));
+	case ELFCLASS32:
+		return (strdup("ELF32"));
+	case ELFCLASS64:
+		return (strdup("ELF64"));
 	default:
 		snprintf(buff, sizeof(buff), ("<unknown: %x>"), elf_class);
 		return (strdup(buff));
@@ -31,7 +34,8 @@ char *get_data_encoding(unsigned int encoding)
 
 	switch (encoding)
 	{
-	case ELFDATANONE:		return (strdup("none"));
+	case ELFDATANONE:
+		return (strdup("none"));
 	case ELFDATA2LSB:
 		return (strdup("2's complement, little endian"));
 	case ELFDATA2MSB:

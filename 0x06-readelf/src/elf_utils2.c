@@ -35,3 +35,112 @@ char *get_machine_name(unsigned int e_machine)
 		return (strdup(buff));
 	}
 }
+
+/**
+ * get_section_type_name - gets the section name
+ * @sh_type: section type of elf section
+ * Return: the section name
+ */
+char *get_section_type_name(unsigned int sh_type)
+{
+	static char buff[32];
+
+	switch (sh_type)
+	{
+	case SHT_NULL:
+		return ("NULL");
+	case SHT_PROGBITS:
+		return ("PROGBITS");
+	case SHT_SYMTAB:
+		return ("SYMTAB");
+	case SHT_STRTAB:
+		return ("STRTAB");
+	case SHT_RELA:
+		return ("RELA");
+	case SHT_HASH:
+		return ("HASH");
+	case SHT_DYNAMIC:
+		return ("DYNAMIC");
+	case SHT_NOTE:
+		return ("NOTE");
+	case SHT_NOBITS:
+		return ("NOBITS");
+	case SHT_REL:
+		return ("REL");
+	case SHT_SHLIB:
+		return ("SHLIB");
+	case SHT_DYNSYM:
+		return ("DYNSYM");
+
+	default:
+		snprintf(buff, sizeof(buff), ("<unknown>: %x"), sh_type);
+		return (buff);
+	}
+}
+
+/**
+ * check - part of get_elf_section_flags
+ * @eh: Elf header
+ * @sh_flags: sh_flags of elf section
+ * @flag: flag
+ * @p: flag
+ */
+void check(ElfN_Ehdr eh, unsigned int flag, unsigned long *sh_flags, char *p)
+{
+	if (eh.e_machine == EM_X86_64 && flag)
+		*p = 'l';
+	else if (flag & SHF_MASKOS)
+	{
+		*p = 'o';
+		*sh_flags &= ~SHF_MASKOS;
+	} else if (flag & SHF_MASKPROC)
+	{
+		*p = 'p';
+		*sh_flags &= ~SHF_MASKPROC;
+	} else
+		*p = 'x';
+}
+
+/**
+ * get_elf_section_flags - gets the section flag of elf
+ * @elf_header: Elf header
+ * @sh_flags: sh_flags of elf section
+ * Return: description of flag of section of elf
+ */
+char *get_elf_section_flags(ElfN_Ehdr elf_header, unsigned long sh_flags)
+{
+	static char buff[1024];
+	char *p = buff;
+	unsigned int flag;
+
+	while (sh_flags)
+	{
+		flag = sh_flags & -sh_flags;
+		sh_flags &= ~flag;
+		if (flag == SHF_WRITE)
+			*p = 'W';
+		else if (flag == SHF_ALLOC)
+			*p = 'A';
+		else if (flag == SHF_EXECINSTR)
+			*p = 'X';
+		else if (flag == SHF_MERGE)
+			*p = 'M';
+		else if (flag == SHF_STRINGS)
+			*p = 'S';
+		else if (flag == SHF_INFO_LINK)
+			*p = 'I';
+		else if (flag == SHF_LINK_ORDER)
+			*p = 'L';
+		else if (flag == SHF_OS_NONCONFORMING)
+			*p = 'O';
+		else if (flag == SHF_GROUP)
+			*p = 'G';
+		else if (flag == SHF_TLS)
+			*p = 'T';
+		else
+			check(elf_header, flag, &sh_flags, p);
+		p++;
+	}
+	*p = '\0';
+	return (buff);
+}

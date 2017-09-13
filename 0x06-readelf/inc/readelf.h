@@ -1,6 +1,7 @@
 #ifndef _READELF_H
 #define _READELF_H
 
+#include <assert.h>
 #include <elf.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -8,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <inttypes.h>
 /**
  * struct Entry - Key and values pair
  * @key : key
@@ -55,6 +56,36 @@ typedef struct ehdr
 	uint16_t e_shstrndx;
 } ElfN_Ehdr;
 
+/**
+ * struct shdr - Struct to represent section headers from both 32 and 64bits
+ * @sh_name : offset to a string in the .shstrtab section that represents the
+ * name of this section
+ * @sh_type : Identifies the type of this header.
+ * @sh_flags : Identifies the attributes of the section.
+ * @sh_addr: Virtual address of the section in memory, for sections that are
+ * loaded.
+ * @sh_offset: Offset of the section in the file image.
+ * @sh_size: Size in bytes of the section in the file image. May be 0.
+ * @sh_link: Contains the section index of an associated section.
+ * @sh_info:  Contains extra information about the section.
+ * @sh_addralign:  Contains the required alignment of the section.
+ * @sh_entsize:  Contains the size, in bytes, of each entry, for sections that
+ * contain fixed-size entries
+ */
+typedef struct shdr
+{
+	uint32_t sh_name;
+	uint32_t sh_type;
+	uint64_t sh_flags;
+	uint64_t sh_addr;
+	uint64_t sh_offset;
+	uint64_t sh_size;
+	uint32_t sh_link;
+	uint32_t sh_info;
+	uint64_t sh_addralign;
+	uint64_t sh_entsize;
+} ElfN_Shdr;
+
 #define GET_BYTE(field) get_byte(field, sizeof(field))
 #define E "Error: Not an ELF file - it has the wrong magic bytes at the start"
 
@@ -67,9 +98,20 @@ char *get_osabi_name(unsigned int osabi);
 char *get_elf_version(unsigned int version);
 char *get_data_encoding(unsigned int encoding);
 char *get_elf_class(unsigned int elf_class);
+char *get_section_type_name(unsigned int sh_type);
+char *get_elf_section_flags(ElfN_Ehdr elf_header, unsigned long sh_flags);
+
+uint64_t get_byte_big_endian(uint64_t data, int size);
+uint64_t get_byte_host(uint64_t data, int __attribute__ ((unused)) size);
 
 void read_elf_header_32(ElfN_Ehdr *ehdr, FILE *file);
 void read_elf_header_64(ElfN_Ehdr *ehdr, FILE *file);
 
+void read_elf_section_header_N(ElfN_Ehdr *ehdr, FILE *file, int arch);
+void read_elf_section_header_32(ElfN_Ehdr eh, ElfN_Shdr *shdr_tbl, int fd);
+void read_elf_section_header_64(ElfN_Ehdr eh, ElfN_Shdr *shdr_tbl, int fd);
+char *read_section(int fd, ElfN_Shdr sh);
+
 void print_elf_header(ElfN_Ehdr ehdr);
+void print_elf_section_header(ElfN_Shdr *shdr_tbl, ElfN_Ehdr eh, int fd);
 #endif
