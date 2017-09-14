@@ -76,7 +76,7 @@ typedef struct shdr
 {
 	uint32_t sh_name;
 	uint32_t sh_type;
-	int64_t sh_flags;
+	uint64_t sh_flags;
 	uint64_t sh_addr;
 	uint64_t sh_offset;
 	uint64_t sh_size;
