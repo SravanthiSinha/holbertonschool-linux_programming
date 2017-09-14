@@ -91,7 +91,20 @@ void print_elf_header(ElfN_Ehdr ehdr)
 		       34 - (int)strlen(entries[i].key), "", entries[i].value);
 	}
 }
-
+/**
+ * print_flag_detials - display the flag details when section headers are
+ * printed
+ */
+void print_flag_detials(void)
+{
+	printf("%s\n", "Key to Flags:");
+	printf("  %s\n",
+	       "W (write), A (alloc), X (execute), M (merge), S (strings), l (large)");
+	printf("  %s\n",
+	       "I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)");
+	printf("  %s\n",
+	       "O (extra OS processing required) o (OS specific), p (processor specific)");
+}
 /**
  * print_elf_section_header -  displays the elf header section as
  * "read elf -W -S"
@@ -103,6 +116,7 @@ void print_elf_section_header(ElfN_Shdr sh_tbl[], ElfN_Ehdr ehdr, int fd)
 {
 	int i = 0;
 	char *str_tbl;
+	int arch32 = ehdr.e_ident[EI_CLASS] == ELFCLASS32;
 
 	if (ehdr.e_shnum == 0)
 	{
@@ -113,28 +127,30 @@ void print_elf_section_header(ElfN_Shdr sh_tbl[], ElfN_Ehdr ehdr, int fd)
 	printf("There are %d section headers, starting at offset 0x%x:\n\n",
 	       ehdr.e_shnum, (unsigned int)ehdr.e_shoff);
 	printf("Section Headers:\n");
-	printf("  [Nr] Name              Type            Address          ");
-	printf("Off    Size   ES Flg Lk Inf Al\n");
+	if (arch32)
+	{
+		printf("  [Nr] Name              Type            Addr     Off    ");
+		printf("Size   ES Flg Lk Inf Al\n");
+	} else
+	{
+		printf("  [Nr] Name              Type             Address      Offset ");
+		printf("      Size              EntSize          Flags  Link  Info Align\n");
+	}
 	for (i = 0; i < ehdr.e_shnum; i++)
 	{
 		printf("  [%2u] %-17s %-15.15s ", i,
 		       str_tbl + sh_tbl[i].sh_name,
 		       get_section_type_name(sh_tbl[i].sh_type));
-		printf("%016x %6.6lx %6.6lx %2.2lx",
+		printf("%0*x %6.6lx %6.6lx %2.2lx", arch32 ? 8 : 16,
 		       (unsigned int)sh_tbl[i].sh_addr,
 		       (unsigned long)sh_tbl[i].sh_offset,
 		       (unsigned long)sh_tbl[i].sh_size,
 		       (unsigned long)sh_tbl[i].sh_entsize);
-		printf(" %3s ", get_elf_section_flags(ehdr, sh_tbl[i].sh_flags));
+		printf(" %3s ",
+		       get_elf_section_flags(ehdr, sh_tbl[i].sh_flags));
 		printf("%2ld %3lu %2ld\n", (unsigned long)sh_tbl[i].sh_link,
 		       (unsigned long)sh_tbl[i].sh_info,
 		       (unsigned long)sh_tbl[i].sh_addralign);
 	}
-	printf("%s\n", "Key to Flags:");
-	printf("  %s\n",
-	       "W (write), A (alloc), X (execute), M (merge), S (strings), l (large)");
-	printf("  %s\n",
-	       "I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)");
-	printf("  %s\n",
-	       "O (extra OS processing required) o (OS specific), p (processor specific)");
+	print_flag_detials();
 }
