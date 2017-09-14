@@ -94,17 +94,25 @@ void print_elf_header(ElfN_Ehdr ehdr)
 /**
  * print_flag_detials - display the flag details when section headers are
  * printed
+ * @arch32 : if architecture is 32 then true else false
  */
-void print_flag_detials(void)
+void print_flag_detials(bool arch32)
 {
 	printf("%s\n", "Key to Flags:");
-	printf("  %s\n",
-	       "W (write), A (alloc), X (execute), M (merge), S (strings), l (large)");
+	if (arch32)
+		printf("  %s\n",
+		       "W (write), A (alloc), X (execute), M (merge), S (strings)");
+	else
+	{
+		printf("  %s\n",
+		       "W (write), A (alloc), X (execute), M (merge), S (strings), l (large)");
+	}
 	printf("  %s\n",
 	       "I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)");
 	printf("  %s\n",
 	       "O (extra OS processing required) o (OS specific), p (processor specific)");
 }
+
 /**
  * print_elf_section_header -  displays the elf header section as
  * "read elf -W -S"
@@ -116,7 +124,7 @@ void print_elf_section_header(ElfN_Shdr sh_tbl[], ElfN_Ehdr ehdr, int fd)
 {
 	int i = 0;
 	char *str_tbl;
-	int arch32 = ehdr.e_ident[EI_CLASS] == ELFCLASS32;
+	bool arch32 = ehdr.e_ident[EI_CLASS] == ELFCLASS32;
 
 	if (ehdr.e_shnum == 0)
 	{
@@ -133,8 +141,8 @@ void print_elf_section_header(ElfN_Shdr sh_tbl[], ElfN_Ehdr ehdr, int fd)
 		printf("Size   ES Flg Lk Inf Al\n");
 	} else
 	{
-		printf("  [Nr] Name              Type             Address      Offset ");
-		printf("      Size              EntSize          Flags  Link  Info Align\n");
+		printf("  [Nr] Name              Type            Address          Off ");
+		printf("   Size   ES Flg Lk Inf Al\n");
 	}
 	for (i = 0; i < ehdr.e_shnum; i++)
 	{
@@ -152,5 +160,5 @@ void print_elf_section_header(ElfN_Shdr sh_tbl[], ElfN_Ehdr ehdr, int fd)
 		       (unsigned long)sh_tbl[i].sh_info,
 		       (unsigned long)sh_tbl[i].sh_addralign);
 	}
-	print_flag_detials();
+	print_flag_detials(arch32);
 }
