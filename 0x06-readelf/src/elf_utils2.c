@@ -119,11 +119,11 @@ char *get_elf_section_flags(ElfN_Ehdr elf_header, unsigned long sh_flags)
 	static char buff[1024];
 	char *p = buff;
 	long flag;
+
 	while (sh_flags)
 	{
 		flag = sh_flags & -sh_flags;
 		sh_flags &= ~flag;
-		
 		if (flag == SHF_WRITE)
 			*p = 'W';
 		else if (flag == SHF_ALLOC)
