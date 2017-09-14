@@ -76,7 +76,7 @@ typedef struct shdr
 {
 	uint32_t sh_name;
 	uint32_t sh_type;
-	uint64_t sh_flags;
+	int64_t sh_flags;
 	uint64_t sh_addr;
 	uint64_t sh_offset;
 	uint64_t sh_size;
@@ -86,6 +86,7 @@ typedef struct shdr
 	uint64_t sh_entsize;
 } ElfN_Shdr;
 
+#define SHF_X86_64_LARGE 0x10000000
 #define GET_BYTE(field) get_byte(field, sizeof(field))
 #define E "Error: Not an ELF file - it has the wrong magic bytes at the start"
 

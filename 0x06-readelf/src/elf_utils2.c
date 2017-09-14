@@ -94,7 +94,7 @@ char *get_section_type_name(unsigned int sh_type)
  */
 void check(ElfN_Ehdr eh, unsigned int flag, unsigned long *sh_flags, char *p)
 {
-	if (eh.e_machine == EM_X86_64 && flag)
+	if (eh.e_machine == EM_X86_64 && flag == SHF_X86_64_LARGE)
 		*p = 'l';
 	else if (flag & SHF_MASKOS)
 	{
@@ -118,12 +118,12 @@ char *get_elf_section_flags(ElfN_Ehdr elf_header, unsigned long sh_flags)
 {
 	static char buff[1024];
 	char *p = buff;
-	unsigned int flag;
-
+	long flag;
 	while (sh_flags)
 	{
 		flag = sh_flags & -sh_flags;
 		sh_flags &= ~flag;
+		
 		if (flag == SHF_WRITE)
 			*p = 'W';
 		else if (flag == SHF_ALLOC)
@@ -144,6 +144,8 @@ char *get_elf_section_flags(ElfN_Ehdr elf_header, unsigned long sh_flags)
 			*p = 'G';
 		else if (flag == SHF_TLS)
 			*p = 'T';
+		else if (sh_flags == 0)
+			*p = 'E';
 		else
 			check(elf_header, flag, &sh_flags, p);
 		p++;
