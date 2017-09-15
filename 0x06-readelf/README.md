@@ -19,6 +19,12 @@ Usage: 2-hreadelf elf_filename
 ```
 standard output, error output and status are the exact same as readelf -W -l
 
+100-hreadelf - a program that displays the information contained in the ELF symbol tables of an ELF file.
+```
+Usage: 100-hreadelf elf_filename
+```
+standard output, error output and status are the exact same as readelf -W -s
+
 ## Useful Resources:
 * man elf(5), man readelf(1)
 * See also /usr/include/elf.h

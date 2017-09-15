@@ -2,7 +2,7 @@
 
 /**
  * main - A program that takes the name of a elf file as a parameter and
- * displays the information contained in the ELF file header of an ELF file.
+ * displays the information contained in the program header of an ELF file.
  * @argc: no of inputs.
  * @argv: inputs.
  *

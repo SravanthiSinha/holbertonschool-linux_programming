@@ -2,7 +2,7 @@
 
 /**
  * main - A program that takes the name of a elf file as a parameter and
- * displays the information contained in section headers of an  ELF file.
+ * displays the information contained in Symbol tables of an ELF file.
  * @argc: no of inputs.
  * @argv: inputs.
  *
@@ -28,13 +28,11 @@ int main(int argc, char *argv[])
 		    elf_check_file(ehdr.e_ident))
 		{
 			get_architecture(ehdr.e_ident[EI_CLASS], &arch);
-			read_elf_section_header_N(&ehdr, file, arch);
+			read_elf_symbol_table_N(&ehdr, file, arch);
 		} else
 			printf("%s: %s\n", E, argv[0]);
 		exit_status = 1;
-		/*
-		 * finally close the file
-		 */
+		/* finally close the file*/
 		fclose(file);
 	} else
 	{

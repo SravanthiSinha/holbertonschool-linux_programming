@@ -111,10 +111,30 @@ typedef struct phdr
 	uint64_t p_align;
 } ElfN_Phdr;
 
+/**
+ * struct symtab-  Symbol table entry
+ * @st_name : Symbol name, index in string tbl
+ * @st_info : Type and binding attributes
+ * @st_other :  No defined meaning, 0
+ * @st_shndx : Associated section index
+ * @st_value : Value of the symbol
+ * @st_size : Associated symbol size
+ */
+typedef struct symtab
+{
+	uint64_t st_name;
+	unsigned char st_info;
+	unsigned char st_other;
+	uint16_t st_shndx;
+	uint64_t st_value;
+	uint64_t st_size;
+} ElfN_Sym;
+
 #define SHF_X86_64_LARGE 0x10000000
 #define GET_BYTE(field) get_byte(field, sizeof(field))
 #define E "Error: Not an ELF file - it has the wrong magic bytes at the start"
-
+#define ELF_ST_BIND(x)		((x) >> 4)
+#define ELF_ST_TYPE(x)		(((unsigned int) x) & 0xf)
 #define ELF_SECTION_SIZE(sec_hdr, segment)			\
 	(((sec_hdr.sh_flags & SHF_TLS) == 0			\
 	  || sec_hdr.sh_type != SHT_NOBITS			\
@@ -147,6 +167,10 @@ char *get_elf_class(unsigned int elf_class);
 char *get_section_type_name(unsigned int sh_type);
 char *get_elf_section_flags(ElfN_Ehdr elf_header, unsigned long sh_flags);
 char *get_segment_type(unsigned long p_type);
+char *get_symbol_binding(unsigned int binding);
+char *get_symbol_type(unsigned int type);
+char *get_symbol_visibility(unsigned int visibility);
+char *get_symbol_index_type(unsigned int type);
 
 char *get_vma(unsigned int no, char format, char end);
 uint64_t get_byte_big_endian(uint64_t data, int size);
@@ -165,8 +189,13 @@ void read_elf_program_header_N(ElfN_Ehdr *ehdr, FILE *file, int arch);
 void read_elf_program_header_32(ElfN_Ehdr eh, ElfN_Phdr *phdr_tbl, int fd);
 void read_elf_program_header_64(ElfN_Ehdr eh, ElfN_Phdr *phdr_tbl, int fd);
 
+void read_elf_symbol_table_N(ElfN_Ehdr *ehdr, FILE *file, int arch);
+
 void print_elf_header(ElfN_Ehdr ehdr);
 void print_elf_section_header(ElfN_Shdr *shdr_tbl, ElfN_Ehdr eh, int fd);
 void print_elf_program_header(ElfN_Phdr ph_tbl[], ElfN_Shdr sh_tbl[],
 			      ElfN_Ehdr ehdr, FILE *file);
+void print_elf_symbol_table(ElfN_Shdr sh_tbl[], ElfN_Sym sym_tbl[],
+			    ElfN_Ehdr ehdr, int sym_tbl_indx, uint64_t count,
+			    int fd);
 #endif
