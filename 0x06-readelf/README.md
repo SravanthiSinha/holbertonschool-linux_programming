@@ -11,7 +11,13 @@ standard output, error output and status are exact same as readelf -W -h
 ```
 Usage: 1-hreadelf elf_filename
 ```
-Your standard output, error output and status should be the exact same as readelf -W -S
+standard output, error output and status should be the exact same as readelf -W -S
+
+2-hreadelf - a program that displays the information contained in the ELF program headers of an ELF file.
+```
+Usage: 2-hreadelf elf_filename
+```
+standard output, error output and status should be the exact same as readelf -W -l
 
 ## Useful Resources:
 * man elf(5), man readelf(1)

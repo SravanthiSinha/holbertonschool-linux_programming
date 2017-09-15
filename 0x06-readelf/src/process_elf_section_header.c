@@ -1,29 +1,6 @@
 #include "readelf.h"
 
 /**
- * read_section- fetches the section
- * @sh: section header
- * @fd: file descriptor of input elf file
- * Return: string representation of the file
- */
-char *read_section(int fd, ElfN_Shdr sh)
-{
-	char *buff = malloc(sh.sh_size + 1);
-
-	if (!buff)
-	{
-		printf("Failed to allocate\n");
-	}
-
-	assert(buff != NULL);
-	assert(lseek(fd, (off_t) sh.sh_offset, SEEK_SET) ==
-	       (off_t) sh.sh_offset);
-	assert(read(fd, (void *)buff, sh.sh_size) == (ssize_t) sh.sh_size);
-	buff[sh.sh_size] = '\0';
-	return (buff);
-}
-
-/**
  * read_elf_section_header_32- fills the sh with suitable(32)
  * architecture data
  * @sh_tbl: section header table
@@ -42,7 +19,8 @@ void read_elf_section_header_32(ElfN_Ehdr ehdr, ElfN_Shdr *sh_tbl, int fd)
 	shdr32_tbl = malloc(ehdr.e_shentsize * ehdr.e_shnum);
 	if (!shdr32_tbl)
 		printf("Failed to allocate section header table\n");
-	assert(lseek(fd, (off_t) ehdr.e_shoff, SEEK_SET) == (off_t) ehdr.e_shoff);
+	assert(lseek(fd, (off_t) ehdr.e_shoff, SEEK_SET) ==
+	       (off_t) ehdr.e_shoff);
 
 	for (i = 0; i < ehdr.e_shnum; i++)
 	{
@@ -80,7 +58,8 @@ void read_elf_section_header_64(ElfN_Ehdr ehdr, ElfN_Shdr *sh_tbl, int fd)
 	shdr64_tbl = malloc(ehdr.e_shentsize * ehdr.e_shnum);
 	if (!shdr64_tbl)
 		printf("Failed to allocate section header table\n");
-	assert(lseek(fd, (off_t) ehdr.e_shoff, SEEK_SET) == (off_t) ehdr.e_shoff);
+	assert(lseek(fd, (off_t) ehdr.e_shoff, SEEK_SET) ==
+	       (off_t) ehdr.e_shoff);
 
 	for (i = 0; i < ehdr.e_shnum; i++)
 	{
@@ -123,4 +102,76 @@ void read_elf_section_header_N(ElfN_Ehdr *ehdr, FILE *file, int arch)
 	else if (arch == 32)
 		read_elf_section_header_32(*ehdr, sh_tbl, fileno(file));
 	print_elf_section_header(sh_tbl, *ehdr, fileno(file));
+}
+
+/**
+ * print_flag_detials - display the flag details when section headers are
+ * printed
+ * @arch32 : if architecture is 32 then true else false
+ */
+void print_flag_detials(bool arch32)
+{
+	printf("%s\n", "Key to Flags:");
+	if (arch32)
+		printf("  %s\n",
+		       "W (write), A (alloc), X (execute), M (merge), S (strings)");
+	else
+	{
+		printf("  %s\n",
+		       "W (write), A (alloc), X (execute), M (merge), S (strings), l (large)");
+	}
+	printf("  %s\n",
+	       "I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)");
+	printf("  %s\n",
+	       "O (extra OS processing required) o (OS specific), p (processor specific)");
+}
+
+/**
+ * print_elf_section_header -  displays the elf header section as
+ * "read elf -W -S"
+ * @sh_tbl: section header table
+ * @fd: file descriptor of input elf file
+ * @ehdr: elf header structure
+ */
+void print_elf_section_header(ElfN_Shdr sh_tbl[], ElfN_Ehdr ehdr, int fd)
+{
+	int i = 0;
+	char *str_tbl;
+	bool arch32 = ehdr.e_ident[EI_CLASS] == ELFCLASS32;
+
+	if (ehdr.e_shnum == 0)
+	{
+		printf("There are no sections in this file.\n");
+		return;
+	}
+	str_tbl = read_section(fd, sh_tbl[ehdr.e_shstrndx]);
+	printf("There are %d section headers, starting at offset 0x%x:\n\n",
+	       ehdr.e_shnum, (unsigned int)ehdr.e_shoff);
+	printf("Section Headers:\n");
+	if (arch32)
+	{
+		printf("  [Nr] Name              Type            Addr     Off    ");
+		printf("Size   ES Flg Lk Inf Al\n");
+	} else
+	{
+		printf("  [Nr] Name              Type            Address          Off ");
+		printf("   Size   ES Flg Lk Inf Al\n");
+	}
+	for (i = 0; i < ehdr.e_shnum; i++)
+	{
+		printf("  [%2u] %-17s %-15.15s ", i,
+		       str_tbl + sh_tbl[i].sh_name,
+		       get_section_type_name(sh_tbl[i].sh_type));
+		printf("%0*x %6.6lx %6.6lx %2.2lx", arch32 ? 8 : 16,
+		       (unsigned int)sh_tbl[i].sh_addr,
+		       (unsigned long)sh_tbl[i].sh_offset,
+		       (unsigned long)sh_tbl[i].sh_size,
+		       (unsigned long)sh_tbl[i].sh_entsize);
+		printf(" %3s ",
+		       get_elf_section_flags(ehdr, sh_tbl[i].sh_flags));
+		printf("%2ld %3lu %2ld\n", (unsigned long)sh_tbl[i].sh_link,
+		       (unsigned long)sh_tbl[i].sh_info,
+		       (unsigned long)sh_tbl[i].sh_addralign);
+	}
+	print_flag_detials(arch32);
 }

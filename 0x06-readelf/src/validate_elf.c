@@ -11,22 +11,22 @@ bool elf_check_file(unsigned char *magic)
 
 	if (magic[0] != ELFMAG0)
 	{
-		/*printf("ELF Header EI_MAG0 incorrect.\n"); */
+		/* printf("ELF Header EI_MAG0 incorrect.\n"); */
 		return (false);
 	}
 	if (magic[1] != ELFMAG1)
 	{
-		/*printf("ELF Header EI_MAG1 incorrect.\n"); */
+		/* printf("ELF Header EI_MAG1 incorrect.\n"); */
 		return (false);
 	}
 	if (magic[2] != ELFMAG2)
 	{
-		/*printf("ELF Header EI_MAG2 incorrect.\n"); */
+		/* printf("ELF Header EI_MAG2 incorrect.\n"); */
 		return (false);
 	}
 	if (magic[3] != ELFMAG3)
 	{
-		/*printf("ELF Header EI_MAG3 incorrect.\n"); */
+		/* printf("ELF Header EI_MAG3 incorrect.\n"); */
 		return (false);
 	}
 	return (true);
