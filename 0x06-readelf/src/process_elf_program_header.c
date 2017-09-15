@@ -11,30 +11,27 @@ void read_elf_program_header_32(ElfN_Ehdr ehdr, ElfN_Phdr *ph_tbl, int fd)
 {
 	uint64_t (*get_byte)(uint64_t, int), i;
 
-	Elf32_Phdr *phdr32_tbl;
+	Elf32_Phdr phdr32_tbl;
 
 	get_byte = (ehdr.e_ident[EI_DATA] == ELFDATA2MSB) ? get_byte_big_endian
 	    : get_byte_host;
 
-	phdr32_tbl = malloc(ehdr.e_phentsize * ehdr.e_phnum);
-	if (!phdr32_tbl)
-		printf("Failed to allocate program header table\n");
 	assert(lseek(fd, (off_t) ehdr.e_phoff, SEEK_SET) ==
 	       (off_t) ehdr.e_phoff);
 
 	for (i = 0; i < ehdr.e_phnum; i++)
 	{
-		assert(read(fd, (void *)&phdr32_tbl[i], ehdr.e_phentsize) ==
+		assert(read(fd, (void *)&phdr32_tbl, ehdr.e_phentsize) ==
 		       ehdr.e_phentsize);
-		ph_tbl[i].p_type = GET_BYTE(phdr32_tbl[i].p_type);
-		ph_tbl[i].p_flags = GET_BYTE(phdr32_tbl[i].p_flags);
-		ph_tbl[i].p_offset = GET_BYTE(phdr32_tbl[i].p_offset);
-		ph_tbl[i].p_vaddr = GET_BYTE(phdr32_tbl[i].p_vaddr);
-		ph_tbl[i].p_paddr = GET_BYTE(phdr32_tbl[i].p_paddr);
-		ph_tbl[i].p_filesz = GET_BYTE(phdr32_tbl[i].p_filesz);
-		ph_tbl[i].p_memsz = GET_BYTE(phdr32_tbl[i].p_memsz);
-		ph_tbl[i].p_flags = GET_BYTE(phdr32_tbl[i].p_flags);
-		ph_tbl[i].p_align = GET_BYTE(phdr32_tbl[i].p_align);
+		ph_tbl[i].p_type = GET_BYTE(phdr32_tbl.p_type);
+		ph_tbl[i].p_flags = GET_BYTE(phdr32_tbl.p_flags);
+		ph_tbl[i].p_offset = GET_BYTE(phdr32_tbl.p_offset);
+		ph_tbl[i].p_vaddr = GET_BYTE(phdr32_tbl.p_vaddr);
+		ph_tbl[i].p_paddr = GET_BYTE(phdr32_tbl.p_paddr);
+		ph_tbl[i].p_filesz = GET_BYTE(phdr32_tbl.p_filesz);
+		ph_tbl[i].p_memsz = GET_BYTE(phdr32_tbl.p_memsz);
+		ph_tbl[i].p_flags = GET_BYTE(phdr32_tbl.p_flags);
+		ph_tbl[i].p_align = GET_BYTE(phdr32_tbl.p_align);
 	}
 }
 
@@ -48,30 +45,27 @@ void read_elf_program_header_32(ElfN_Ehdr ehdr, ElfN_Phdr *ph_tbl, int fd)
 void read_elf_program_header_64(ElfN_Ehdr ehdr, ElfN_Phdr *ph_tbl, int fd)
 {
 	uint64_t (*get_byte)(uint64_t, int), i;
-	Elf64_Phdr *phdr64_tbl;
+	Elf64_Phdr phdr64_tbl;
 
 	get_byte = (ehdr.e_ident[EI_DATA] == ELFDATA2MSB) ? get_byte_big_endian
 	    : get_byte_host;
 
-	phdr64_tbl = malloc(ehdr.e_phentsize * ehdr.e_phnum);
-	if (!phdr64_tbl)
-		printf("Failed to allocate program header table\n");
 	assert(lseek(fd, (off_t) ehdr.e_phoff, SEEK_SET) ==
 	       (off_t) ehdr.e_phoff);
 
 	for (i = 0; i < ehdr.e_phnum; i++)
 	{
-		assert(read(fd, (void *)&phdr64_tbl[i], ehdr.e_phentsize) ==
+		assert(read(fd, (void *)&phdr64_tbl, ehdr.e_phentsize) ==
 		       ehdr.e_phentsize);
-		ph_tbl[i].p_type = GET_BYTE(phdr64_tbl[i].p_type);
-		ph_tbl[i].p_flags = GET_BYTE(phdr64_tbl[i].p_flags);
-		ph_tbl[i].p_offset = GET_BYTE(phdr64_tbl[i].p_offset);
-		ph_tbl[i].p_vaddr = GET_BYTE(phdr64_tbl[i].p_vaddr);
-		ph_tbl[i].p_paddr = GET_BYTE(phdr64_tbl[i].p_paddr);
-		ph_tbl[i].p_filesz = GET_BYTE(phdr64_tbl[i].p_filesz);
-		ph_tbl[i].p_memsz = GET_BYTE(phdr64_tbl[i].p_memsz);
-		ph_tbl[i].p_flags = GET_BYTE(phdr64_tbl[i].p_flags);
-		ph_tbl[i].p_align = GET_BYTE(phdr64_tbl[i].p_align);
+		ph_tbl[i].p_type = GET_BYTE(phdr64_tbl.p_type);
+		ph_tbl[i].p_flags = GET_BYTE(phdr64_tbl.p_flags);
+		ph_tbl[i].p_offset = GET_BYTE(phdr64_tbl.p_offset);
+		ph_tbl[i].p_vaddr = GET_BYTE(phdr64_tbl.p_vaddr);
+		ph_tbl[i].p_paddr = GET_BYTE(phdr64_tbl.p_paddr);
+		ph_tbl[i].p_filesz = GET_BYTE(phdr64_tbl.p_filesz);
+		ph_tbl[i].p_memsz = GET_BYTE(phdr64_tbl.p_memsz);
+		ph_tbl[i].p_flags = GET_BYTE(phdr64_tbl.p_flags);
+		ph_tbl[i].p_align = GET_BYTE(phdr64_tbl.p_align);
 	}
 }
 
@@ -91,8 +85,8 @@ void read_elf_program_header_N(ElfN_Ehdr *ehdr, FILE *file, int arch)
 		read_elf_header_64(ehdr, file);
 	else if (arch == 32)
 		read_elf_header_32(ehdr, file);
-	ph_tbl = malloc(ehdr->e_phentsize * ehdr->e_phnum);
-	sh_tbl = malloc(ehdr->e_shentsize * ehdr->e_shnum);
+	ph_tbl = malloc(sizeof(ElfN_Phdr) * ehdr->e_phnum);
+	sh_tbl = malloc(sizeof(ElfN_Shdr) * ehdr->e_shnum);
 	if (!sh_tbl)
 		printf("Failed to allocate section header table\n");
 	if (!ph_tbl)
@@ -122,11 +116,15 @@ void print_header(ElfN_Ehdr ehdr, bool arch32)
 	       ehdr.e_phnum, (unsigned int)ehdr.e_phoff);
 	printf("Program Headers:\n");
 	if (arch32)
+	{
 		printf("  Type           Offset   VirtAddr   PhysAddr   ");
+		printf("FileSiz MemSiz  Flg Align\n");
+	}
 	else
-		printf
-		    ("  Type           Offset   VirtAddr           PhysAddr           ");
-	printf("FileSiz  MemSiz   Flg Align\n");
+	{
+		printf("  Type           Offset   VirtAddr           PhysAddr           ");
+				printf("FileSiz  MemSiz   Flg Align\n");
+	}
 }
 /**
  * print_type_header - display the additional details for the type

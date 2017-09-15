@@ -134,6 +134,7 @@ typedef struct phdr
 	     || (sec_hdr.sh_addr >= segment.p_vaddr			\
 		 && (sec_hdr.sh_addr + ELF_SECTION_SIZE(sec_hdr, segment) \
 		     <= segment.p_vaddr + segment.p_memsz))))
+
 bool elf_check_file(unsigned char *magic);
 bool get_architecture(char c, int *arch);
 
