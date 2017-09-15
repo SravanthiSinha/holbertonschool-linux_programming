@@ -210,7 +210,7 @@ void print_elf_program_header(ElfN_Phdr ph_tbl[], ElfN_Shdr sh_tbl[],
 		printf("   %2.2d     ", i);
 		for (j = 0; j < ehdr.e_shnum && str_tbl; j++)
 			if (ELF_IS_SECTION_IN_SEGMENT(sh_tbl[j], ph_tbl[i])
-			    && strlen(str_tbl + sh_tbl[j].sh_name))
+			    && sh_tbl[j].sh_size)
 				printf("%s ", str_tbl + sh_tbl[j].sh_name);
 		putc('\n', stdout);
 	}
