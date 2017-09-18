@@ -11,7 +11,8 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <linux/limits.h>
-
+#include <ctype.h>
+#include <math.h>
 /**
  * struct Entry - Key and values pair
  * @key : key
@@ -130,16 +131,59 @@ typedef struct symtab
 	uint64_t st_size;
 } ElfN_Sym;
 
+#define SPACE {print_char(' '); print_char(' '); }
+#define _S		", "
+#define _F(f, t, r)	printf("%s%s", r && (f & t) ? _S : "", f & t ? #t : "")
 #define SHF_X86_64_LARGE 0x10000000
 #define GET_BYTE(field) get_byte(field, sizeof(field))
 #define E "Error: Not an ELF file - it has the wrong magic bytes at the start"
 #define ELF_ST_BIND(x)		((x) >> 4)
 #define ELF_ST_TYPE(x)		(((unsigned int) x) & 0xf)
 
+/**
+ * enum flags- enum of flags for an elf
+ * @BFD_NO_FLAGS: No flags
+ * @HAS_RELOC: Has REL AND RELA types
+ * @HAS_DEBUG: NOt implemented yet
+ * @EXEC_P: Is exec
+ * @HAS_LINENO: not implemented yet
+ * @HAS_SYMS: Has symbols
+ * @HAS_LOCAL: Has local variables
+ * @DYNAMIC: Has dynamic content
+ * @WP_TEXT: not implemented yet
+ * @D_PAGED: Is dynamic paged
+ */
+enum flags
+{
+	BFD_NO_FLAGS	= 0,
+	HAS_RELOC		= 1,
+	EXEC_P		= 2,
+	HAS_LINENO		= 4,
+	HAS_DEBUG		= 8,
+	HAS_SYMS		= 16,
+	HAS_LOCAL		= 32,
+	DYNAMIC		= 64,
+	WP_TEXT		= 128,
+	D_PAGED		= 256
+};
+
+int print_char(char);
+void print_hex(int, int);
+void get_hex(int, char *s);
+unsigned int htoi(char s[]);
+void print_buffer(char *b, int size, uint64_t addr);
+int lenHelper(uint64_t x);
+
+bool elf_has_section_type(ElfN_Shdr sh_tbl[], int count, uint32_t type);
+bool elf_has_symbols(ElfN_Shdr sh_tbl[], int count, int fd, uint32_t str_indx);
 bool elf_check_file(unsigned char *magic);
 bool get_architecture(char c, int *arch);
-
+int is_from_section(uint16_t sh_indx, char *strtab, ElfN_Shdr sh_tbl[],
+		    const char *s);
 char get_st_flag(ElfN_Shdr sh_tbl[], ElfN_Sym sym_tab, char *strtab);
+char		*get_arch_mach_name(unsigned int e_machine);
+char		*get_file_format_name(ElfN_Ehdr ehdr);
+int get_flags(ElfN_Ehdr *ehdr, ElfN_Shdr sh_tbl[], int fd);
 
 char *get_vma(unsigned int no, char format, char end);
 uint64_t get_byte_big_endian(uint64_t data, int size);
@@ -149,7 +193,8 @@ void read_elf_header_32(ElfN_Ehdr *ehdr, FILE *file);
 void read_elf_header_64(ElfN_Ehdr *ehdr, FILE *file);
 void read_elf_header(ElfN_Ehdr ehdr, Entry entries[]);
 
-void read_elf_section_header_N(ElfN_Ehdr *ehdr, FILE *file, int arch);
+void read_elf_section_header_N(ElfN_Ehdr *ehdr, FILE *file, int arch,
+			       char *filename);
 void read_elf_section_header_32(ElfN_Ehdr eh, ElfN_Shdr *shdr_tbl, int fd);
 void read_elf_section_header_64(ElfN_Ehdr eh, ElfN_Shdr *shdr_tbl, int fd);
 char *read_section(int fd, ElfN_Shdr sh);
@@ -161,6 +206,7 @@ void read_elf_program_header_64(ElfN_Ehdr eh, ElfN_Phdr *phdr_tbl, int fd);
 int read_elf_symbol_table_N(ElfN_Ehdr *ehdr, FILE *file, int arch);
 
 void print_elf_symbol_table(ElfN_Shdr sh_tbl[], ElfN_Sym sym_tbl[],
-			    ElfN_Ehdr ehdr,  uint64_t count,
-			    int fd);
+			    ElfN_Ehdr ehdr,  uint64_t count, int fd);
+void print_elf_section_header(ElfN_Shdr sh_tbl[], ElfN_Ehdr ehdr, int fd);
+
 #endif

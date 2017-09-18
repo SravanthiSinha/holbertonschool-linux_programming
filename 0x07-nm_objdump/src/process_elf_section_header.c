@@ -79,11 +79,17 @@ void read_elf_section_header_64(ElfN_Ehdr ehdr, ElfN_Shdr *sh_tbl, int fd)
  * @ehdr: elf header structure
  * @file: input file
  * @arch: architecture of the elf file
+ * @filename : input file name
  */
-void read_elf_section_header_N(ElfN_Ehdr *ehdr, FILE *file, int arch)
+void read_elf_section_header_N(ElfN_Ehdr *ehdr, FILE *file, int arch,
+			       char *filename)
 {
 	ElfN_Shdr *sh_tbl;
+	unsigned int flags;
+	int ret;
 
+	ret = 0;
+	flags = BFD_NO_FLAGS;
 	if (arch == 64)
 		read_elf_header_64(ehdr, file);
 	else if (arch == 32)
@@ -95,4 +101,94 @@ void read_elf_section_header_N(ElfN_Ehdr *ehdr, FILE *file, int arch)
 		read_elf_section_header_64(*ehdr, sh_tbl, fileno(file));
 	else if (arch == 32)
 		read_elf_section_header_32(*ehdr, sh_tbl, fileno(file));
+	printf("\n%s:     file format elf%d-%s\n", filename, arch,
+	       get_file_format_name(*ehdr));
+	flags = get_flags(ehdr, sh_tbl, fileno(file));
+	printf("architecture: %s, flags 0x%08x:\n",
+	       get_arch_mach_name(ehdr->e_machine), flags);
+	if (flags == BFD_NO_FLAGS)
+		printf("BFD_NO_FLAGS");
+	else
+	{
+		ret |= _F(flags, HAS_RELOC, ret);
+		ret |= _F(flags, EXEC_P, ret);
+		ret |= _F(flags, HAS_LINENO, ret);
+		ret |= _F(flags, HAS_DEBUG, ret);
+		ret |= _F(flags, HAS_SYMS, ret);
+		ret |= _F(flags, DYNAMIC, ret);
+		ret |= _F(flags, WP_TEXT, ret);
+		ret |= _F(flags, D_PAGED, ret);
+	}
+	printf("\n");
+	printf("start address 0x%0*lx\n\n", arch == 32 ? 8 : 16, ehdr->e_entry);
+	print_elf_section_header(sh_tbl, *ehdr, fileno(file));
+}
+
+bool display_section(uint32_t type, ElfN_Ehdr ehdr, ElfN_Shdr shdr,
+		     char *str_tbl)
+{
+	if (type == SHT_NULL || type == SHT_NOBITS || type == SHT_SYMTAB)
+		return (false);
+	if (type == SHT_STRTAB && !(shdr.sh_flags & SHF_ALLOC))
+		return (false);
+	if ((ehdr.e_type == ET_EXEC || ehdr.e_type == ET_DYN) &&
+	    (type == SHT_REL || type == SHT_RELA))
+		return (true);
+	if (ehdr.e_type != ET_EXEC && (type == SHT_REL || type == SHT_RELA))
+		return (false);
+	if (ehdr.e_type == ET_EXEC
+	    && (!strcmp(str_tbl + shdr.sh_name, ".text")
+		|| !strcmp(str_tbl + shdr.sh_name, ".data")))
+		return (true);
+	if (ehdr.e_type == ET_DYN
+	    && (!strcmp(str_tbl + shdr.sh_name, ".text")
+		|| !strcmp(str_tbl + shdr.sh_name, ".data")))
+		return (true);
+	if (ehdr.e_machine == EM_X86_64 &&
+	    (!strcmp(str_tbl + shdr.sh_name, ".text") ||
+	     !strcmp(str_tbl + shdr.sh_name, ".data")))
+		return (false);
+	if (!strcmp(str_tbl + shdr.sh_name, ".tm_clone_table"))
+		return (false);
+	if (!strcmp(str_tbl + shdr.sh_name, ".note.GNU-stack"))
+		return (false);
+	if (!strlen(str_tbl + shdr.sh_name))
+		return (false);
+	return (true);
+}
+
+/**
+ * print_elf_section_header -  displays the elf header section as
+ * "read elf -W -S"
+ * @sh_tbl: section header table
+ * @fd: file descriptor of input elf file
+ * @ehdr: elf header structure
+ */
+void print_elf_section_header(ElfN_Shdr sh_tbl[], ElfN_Ehdr ehdr, int fd)
+{
+	int i = 0;
+	char *str_tbl;
+	char *content;
+	uint64_t address;
+	uint16_t type;
+
+	if (ehdr.e_shnum == 0)
+	{
+		printf("There are no sections in this file.\n");
+		return;
+	}
+	str_tbl = read_section(fd, sh_tbl[ehdr.e_shstrndx]);
+	for (i = 0; i < ehdr.e_shnum; i++)
+	{
+		type = sh_tbl[i].sh_type;
+		if (display_section(type, ehdr, sh_tbl[i], str_tbl))
+		{
+			printf("Contents of section %s:\n",
+			       str_tbl + sh_tbl[i].sh_name);
+			fflush(stdout);
+			content = read_section(fd, sh_tbl[i]);
+			address = sh_tbl[i].sh_addr;
+			print_buffer(content, sh_tbl[i].sh_size, address);
+		}
+	}
 }

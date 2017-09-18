@@ -80,3 +80,37 @@ char *read_section(int fd, ElfN_Shdr sh)
 	buff[sh.sh_size] = '\0';
 	return (buff);
 }
+
+/**
+ * get_file_type - gets the file type of elf
+ * @e_type: file type of elf
+ * Return: file type of elf
+ */
+char *get_file_type(unsigned int e_type)
+{
+	char buff[32];
+
+	switch (e_type)
+	{
+	case ET_NONE:
+		return (strdup("NONE (None)"));
+	case ET_REL:
+		return (strdup("REL (Relocatable file)"));
+	case ET_EXEC:
+		return (strdup("EXEC (Executable file)"));
+	case ET_DYN:
+		return (strdup("DYN (Shared object file)"));
+	case ET_CORE:
+		return (strdup("CORE (Core file)"));
+	default:
+		if ((e_type >= ET_LOPROC) && (e_type <= ET_HIPROC))
+			snprintf(buff, sizeof(buff),
+				 ("Processor Specific: (%x)"), e_type);
+		else if ((e_type >= ET_LOOS) && (e_type <= ET_HIOS))
+			snprintf(buff, sizeof(buff), ("OS Specific: (%x)"),
+				 e_type);
+		else
+			snprintf(buff, sizeof(buff), ("<unknown>: %x"), e_type);
+		return (strdup(buff));
+	}
+}

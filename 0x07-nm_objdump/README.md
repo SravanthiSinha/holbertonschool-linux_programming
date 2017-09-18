@@ -1,11 +1,17 @@
 ## 0x07. C - ELF: nm/objdump
 ### System programming & Algorithm ― Linux programming
 
-nm -   a program that reproduce the GNU nm command
+nm.c -   A program that reproduce the GNU nm command
 ```
 Usage: hnm [objfile ...]
 ```
 standard output, error output and status are exact same as nm -p
+
+objdump.c - A program that reproduce the GNU nmobjdump command
+```
+Usage: hobjdump [objfile ...]
+```
+standard output, error output and status are exact same as objdump -sf
 
 ## Useful Resources:
 * man elf(5), man readelf(1)
