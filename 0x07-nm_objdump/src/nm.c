@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 		{
 			get_architecture(ehdr.e_ident[EI_CLASS], &arch);
 			if (!read_elf_symbol_table_N(&ehdr, file, arch))
-				printf("%s: %s: no symbols\n", argv[0], argv[1]);
+				fprintf(stderr, "%s: %s: no symbols\n", argv[0], argv[1]);
 		} else
 			printf("%s: %s\n", E, argv[0]);
 		exit_status = 1;
