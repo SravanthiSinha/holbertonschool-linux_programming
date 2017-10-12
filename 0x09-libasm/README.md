@@ -19,16 +19,11 @@ Command used to assemble the asm files
 
 * libasm.h - The prototypes of all  functions are included in this header
 
-* 0-strlen.asm - a copycat of the function strlen(3), in x86-64 Assembly
+* 0-strlen.asm - A copycat of the function strlen(3), in x86-64 Assembly
 
-```
-$ gcc -Wall -Wextra -Werror -pedantic -g3 -c -o 0-main.o 0-main.c
-$ nasm -f elf64 -o 0-strlen.o 0-strlen.asm
-$ gcc -o 0-strlen 0-main.o 0-strlen.o
-$ ./0-strlen
-All good!
-$
-```
+* 1-strcmp.asm - A copycat of the function strcmp(3), in x86-64 Assembly
+
+* 2-strncmp.asm - A copycat of the function strncmp(3), in x86-64 Assembly
 
 # Useful Resources:
 * [[EYNTK] x86-64 Assembly](https://intranet.hbtn.io/concepts/82)

@@ -1,22 +1,23 @@
 BITS 64
 
 	;; declare prerequistes
-	global asm_strcmp 	; EXPORT our 'asm_strcmp' function
+	global asm_strncmp 	; EXPORT our 'asm_strncmp' function
 
 	section .text
-	; int asm_strcmp(const char *s1, const char *s2)
-	; compares the 2 string
-asm_strcmp:
+	; int asm_strncmp(const char *s1, const char *s2, size_t n);
+	; compares the n bytes of string s1 and s2
+asm_strncmp:
 	;;prologue
 	push rbp		; Set up stack frame
 	mov rbp, rsp
-
+	push rcx
 	push r15
 	push r14
 	;;prologue end
 
 	mov r15b, 0		; variable cs1
 	mov r14b, 0		; variable cs2
+	mov rcx, rdx			; counter i
 
 	;loop_str - while loop
 loop_str:
@@ -24,10 +25,13 @@ loop_str:
 	mov r14b, [rsi]  	; c2 = *cs2;
 	add rdi, 1		; Increment the first string *cs1++;
 	add rsi, 1		; Increment the second string *cs2++;
+	cmp rcx,  0		; (count > 0)
+	jle eq
 	cmp r15b, r14b		; (c1 != c2)
 	jne loopend
 	cmp [rsi], byte 0 	; (!c1)
 	je eq
+	sub rcx, 1;
 	jmp loop_str
 loopend:
 
@@ -51,6 +55,7 @@ end:
 	;;epilogue
 	pop r14
 	pop r15
+	pop rcx
 	mov rsp, rbp		; Restore previous stack frame
 	pop rbp
 	;;epilogue end

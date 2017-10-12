@@ -23,8 +23,8 @@ loop_str:
 	jmp loop_str
 end:
 	mov rax, rcx		; Set the return value
-	;;  epilogue
+	;;epilogue
 	mov rsp, rbp		; Restore previous stack frame
 	pop rbp
-	;;prologue end
+	;;epilogue end
 	ret			; Return from procedure
