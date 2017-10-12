@@ -39,10 +39,10 @@ char* asm_strstr(const char *str, sonst char *substr)
  */
 int main(void)
 {
-    assert(strstr(S1, S2) == asm_strstr(S1, S2));
-    assert(strstr(S1, S3) == asm_strstr(S1, S3));
-    assert(strstr(S1, S1) == asm_strstr(S1, S1));
+	assert(strstr(S1, S2) == asm_strstr(S1, S2));
+	assert(strstr(S1, S3) == asm_strstr(S1, S3));
+	assert(strstr(S1, S1) == asm_strstr(S1, S1));
 
-    printf("All good!\n");
-    return (EXIT_SUCCESS);
+	printf("All good!\n");
+	return (EXIT_SUCCESS);
 }
