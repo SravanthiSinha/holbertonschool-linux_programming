@@ -27,9 +27,12 @@ Command used to assemble the asm files
 
 * 3-strchr.asm - A copycat of the function strchr(3), in x86-64 Assembly
 
+* 4-strstr.asm - A copycat of the function strchstr(3), in x86-64 Assembly
+
 # Useful Resources:
 * [[EYNTK] x86-64 Assembly](https://intranet.hbtn.io/concepts/82)
 * [List of registers](https://en.wikipedia.org/wiki/Processor_register)
 * [List of Intel Instructions](http://www.penguin.cz/~literakl/intel/intel.html)
 * [A video to explain how the stack frame works](https://www.youtube.com/watch?v=KRaJoeVXF_8)
 * [Github repository containing the sources use](https://github.com/holbertonschool/0x09-libasm_concept)
+* [Linux code replicated](https://github.com/torvalds/linux/blob/master/lib/string.c)

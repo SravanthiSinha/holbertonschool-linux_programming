@@ -44,7 +44,7 @@ neg:
 	jmp end
 
 pos:
-	mov rax, 0x1		; Set reyurn value 1
+	mov rax, 0x1		; Set return value 1
 	jmp end
 
 eq:
