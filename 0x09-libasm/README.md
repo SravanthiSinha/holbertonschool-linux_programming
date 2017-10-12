@@ -25,6 +25,8 @@ Command used to assemble the asm files
 
 * 2-strncmp.asm - A copycat of the function strncmp(3), in x86-64 Assembly
 
+* 3-strchr.asm - A copycat of the function strchr(3), in x86-64 Assembly
+
 # Useful Resources:
 * [[EYNTK] x86-64 Assembly](https://intranet.hbtn.io/concepts/82)
 * [List of registers](https://en.wikipedia.org/wiki/Processor_register)
