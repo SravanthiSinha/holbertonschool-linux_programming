@@ -33,6 +33,8 @@ Command used to assemble the asm files
 
 * 100-putc.asm - A function that prints a single character on the standard output
 
+* 101-puts.asm - A function that prints a string of characters on the standard output
+
 # Useful Resources:
 * [[EYNTK] x86-64 Assembly](https://intranet.hbtn.io/concepts/82)
 * [List of registers](https://en.wikipedia.org/wiki/Processor_register)

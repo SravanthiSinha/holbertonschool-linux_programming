@@ -5,18 +5,20 @@ BITS 64
 	section .text
 
 	; size_t asm_putc(int c);
-	; Prints the lowercase alphabet
+	; Prints the input char
 
 asm_putc:
+	;;prologue
 	push rbp		; Setup stack frame
 	mov rbp, rsp
 				; Save registers that are gonna be used in this
 	push rsi		; procedure, in case they were used before
 	push rdi
 	push rdx
-
+	;;prologue end
+	
 	add rsp, -1		; Increase the stack by 1 byte to store a char
-	mov [rsp], rdi	; Store the ascii value of c
+	mov [rsp], rdi		; Store the ascii value of input char c
 
 	; Setup 'write' syscall
 	mov rax, 1		; Write syscall
@@ -28,11 +30,13 @@ asm_putc:
 end:
 	add rsp, 1		; Discard our local variable
 	mov rax, 0x1
+	
+	;; epilogue
 	pop rdx			; Restore used registers
 	pop rdi
 	pop rsi
-
 	mov rsp, rbp		; Restore previous stack frame
 	pop rbp
-
-	ret			; Return from procedure ('pop rip')
+	;;epilogue end
+	
+	ret			; Return from procedure
