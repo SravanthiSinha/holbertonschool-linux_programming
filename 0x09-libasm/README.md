@@ -35,6 +35,8 @@ Command used to assemble the asm files
 
 * 101-puts.asm - A function that prints a string of characters on the standard output
 
+* 102-strcasecmp.asm - A copycat of the function strcasecmp(3), in x86-64 Assembly
+
 # Useful Resources:
 * [[EYNTK] x86-64 Assembly](https://intranet.hbtn.io/concepts/82)
 * [List of registers](https://en.wikipedia.org/wiki/Processor_register)
