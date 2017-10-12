@@ -1,0 +1,52 @@
+BITS 64
+
+	;; declare prerequistes
+	global asm_strcmp 	; EXPORT our 'asm_strlen' function
+
+	section .text
+	; size_t asm_strlen(char *s)
+	; returns the size of the string
+asm_strcmp:
+	;;prologue
+	push rbp		; Set up stack frame
+	mov rbp, rsp
+
+	push r15
+	push r14
+	;;prologue end
+
+	mov r15b, 0		; variable cs1
+	mov r14b, 0		; variable cs2
+
+	;loop_str - while loop
+loop_str:
+	mov r15b, [rdi] 	; c1 = *cs1;
+	mov r14b, [rsi]  	; c2 = *cs2;
+	add rdi, 1		; Increment the first string *cs1++;
+	add rsi, 1		; Increment the second string *cs2++;
+	cmp r15b, r14b		; (c1 != c2)
+	jne loopend
+	cmp [rsi], byte 0 	; (!c1)
+	je eq
+	jmp loop_str
+loopend:
+	cmp r15b, r14b		; c1 < c2
+	jl neg
+	jmp pos
+neg:
+	mov rax, 0xFFFFFFFF 	; Set return value -1
+	jmp end
+pos:
+	mov rax, 0x1		; Set reyurn value 1
+	jmp end
+eq:
+	mov rax, 0x0		; Set return value 0
+	jmp end
+end:
+	;;  epilogue
+	pop r14
+	pop r15
+	mov rsp, rbp		; Restore previous stack frame
+	pop rbp
+	;;prologue end
+	ret			; Return from procedure
