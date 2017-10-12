@@ -29,6 +29,10 @@ Command used to assemble the asm files
 
 * 4-strstr.asm - A copycat of the function strchstr(3), in x86-64 Assembly
 
+* 5-memcpy.asm - A copycat of the function memcpy(3), in x86-64 Assembly
+
+* 100-putc.asm - A function that prints a single character on the standard output
+
 # Useful Resources:
 * [[EYNTK] x86-64 Assembly](https://intranet.hbtn.io/concepts/82)
 * [List of registers](https://en.wikipedia.org/wiki/Processor_register)
