@@ -17,6 +17,8 @@ Command used to assemble the asm files
  nasm -f elf64 <file.asm>
 ```
 
+* main - contains all the main files to test the functions created
+ 
 * libasm.h - The prototypes of all  functions are included in this header
 
 * 0-strlen.asm - A copycat of the function strlen(3), in x86-64 Assembly
