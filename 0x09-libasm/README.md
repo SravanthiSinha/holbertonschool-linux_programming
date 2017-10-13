@@ -41,6 +41,8 @@ Command used to assemble the asm files
 
 * 104-strspn.asm - A copycat of the function strspn(3), in x86-64 Assembly
 
+* 105-strcspn.asm - A copycat of the function strcspn(3), in x86-64 Assembly
+
 # Useful Resources:
 * [[EYNTK] x86-64 Assembly](https://intranet.hbtn.io/concepts/82)
 * [List of registers](https://en.wikipedia.org/wiki/Processor_register)

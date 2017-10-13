@@ -1,12 +1,12 @@
 BITS 64
 
 	;; declare prerequistes
-	global asm_strspn 	; EXPORT our 'asm_strspn' function
+	global asm_strcspn 	; EXPORT our 'asm_strcspn' function
 
 	section .text
-	; size_t strspn(const char *s, const char *accept)
-	; Calculate the length of the initial substring of @s which only contain letters in @accept
-asm_strspn:
+	; size_t strcspn(const char *s, const char *reject)
+	; Calculate the length of the initial substring of @s which doesn't contain letters in @reject
+asm_strcspn:
 	;;prologue
 	push rbp		; Set up stack frame
 	mov rbp, rsp
@@ -17,7 +17,7 @@ asm_strspn:
 	;;prologue end
 
 	mov r15b, 0		; variable char *p
-	mov r14b, 0		; variable char *a
+	mov r14b, 0		; variable char *r
 	mov r13b, 0
   mov rcx, 0h
 
@@ -26,18 +26,16 @@ asm_strspn:
 loop_str:
 	cmp [r15], byte 0 	;  while (*p != '\0')
 	je loopend
-	mov r14, rsi  		; a = accept;
+	mov r14, rsi  		; r = reject;
 loop_str_str:
-	cmp [r14], byte 0 	; (*a != '\0')
+	cmp [r14], byte 0 	; (*r != '\0')
 	je e
 	mov r13b, [r15]
-	cmp r13b, [r14]		; (*p == *a)
-	je e
-	add r14, 1		; ++a
+	cmp r13b, [r14]		; (*p == *r)
+	je loopend
+	add r14, 1		; ++r
 	jmp loop_str_str
 e:
-	cmp [r14], byte 0  ; (*a != '\0')
-	je loopend
 	add r15, 1		; ++p;
   inc rcx
 	jmp loop_str
