@@ -39,6 +39,8 @@ Command used to assemble the asm files
 
 * 103-strncasecmp.asm - A copycat of the function strncasecmp(3), in x86-64 Assembly
 
+* 104-strspn.asm - A copycat of the function strspn(3), in x86-64 Assembly
+
 # Useful Resources:
 * [[EYNTK] x86-64 Assembly](https://intranet.hbtn.io/concepts/82)
 * [List of registers](https://en.wikipedia.org/wiki/Processor_register)
