@@ -2,6 +2,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+/**
+ * main - Program entry point
+ *
+ * Return: EXIT_SUCCESS or EXIT_FAILURE
+ */
 int main(void)
 {
 	char *ptr;

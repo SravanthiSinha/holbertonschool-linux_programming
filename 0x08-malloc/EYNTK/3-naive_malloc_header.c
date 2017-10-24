@@ -1,5 +1,11 @@
 #include <unistd.h>
 
+/**
+* naive_malloc_header - malloc which allocates more space than asked
+* in order to store a small header at the beginning of the allocated chunk.
+* @size: No of bytes to be allocated
+* Return: A pointer to the allocated memory
+*/
 void *naive_malloc_header(size_t size)
 {
 	void *previous_break;

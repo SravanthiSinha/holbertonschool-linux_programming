@@ -2,8 +2,15 @@
 #include <stdio.h>
 
 static void *heap_start;
-static size_t no_chunks = 0;
+static size_t no_chunks {0};
 
+/**
+* naive_malloc_extend -  malloc which keep track of the address of the first
+* chunk in chain and number of chunks useda and allocate more space when a
+* page is full
+* @size: No of bytes to be allocated
+* Return: A pointer to the allocated memory
+*/
 void *naive_malloc_extend(size_t size)
 {
 	void *previous_break = NULL;
