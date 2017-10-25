@@ -5,7 +5,7 @@ static void *heap_start;
 static size_t no_chunks = 0;
 
 /**
-* get_next_multiple - returns a number rounded up to the next multiple of 8 
+* get_next_multiple - returns a number rounded up to the next multiple of 8
 * @size: No of bytes to be allocated
 * Return: A pointer to the aligned address
 */
@@ -37,41 +37,38 @@ void *naive_malloc_align(size_t size)
 	{
 		/*The first time our malloc is called, we need to extend the program break by the virtual memory page size. */
 		heap_start = sbrk(0);
-		previous_break = sbrk(header_size);
-		unused_chunk = (size_t) sysconf(_SC_PAGESIZE) - header_size;
-		/*set used bytes */
-		*((size_t *) previous_break) = header_size + size;
+		unused_chunk = (size_t) sysconf(_SC_PAGESIZE);
 		previous_break = sbrk(unused_chunk);
 		if (previous_break == (void *)-1)
 			return (NULL);
-		/* setting unused chunk */
-		*((size_t *) ((char *)previous_break + size)) =
-		    unused_chunk - size - header_size;
-	} else
-	{
-		previous_break = heap_start;
-		for (i = 0; i < no_chunks; i++)
-		{
-			used_chunk = *((size_t *) previous_break);
-			previous_break =
-			    (void *)((char *)previous_break + used_chunk);
-			unused_chunk = *((size_t *) previous_break);
-		}
 		/*set used bytes */
 		*((size_t *) previous_break) = header_size + size;
-		previous_break = (void *)((char *)previous_break + header_size);
 		/* setting unused chunk */
-		if (unused_chunk < (header_size + size))
-		{
-			sbrk((size_t) sysconf(_SC_PAGESIZE));
-			*((size_t *) ((char *)previous_break + size)) =
-			    unused_chunk + (size_t) sysconf(_SC_PAGESIZE) -
-			    header_size - size;
-		} else
-			*((size_t *) ((char *)previous_break + size)) =
-			    unused_chunk - header_size - size;
-
+		*((size_t *) ((char *)previous_break + header_size + size)) =
+		    unused_chunk - header_size - size;
+		no_chunks++;
+		return ((void *)((char *)previous_break + header_size));
 	}
+	previous_break = heap_start;
+	for (i = 0; i < no_chunks; i++)
+	{
+		used_chunk = *((size_t *) previous_break);
+		previous_break = (void *)((char *)previous_break + used_chunk);
+		unused_chunk = *((size_t *) previous_break);
+	}
+	/*set used bytes */
+	*((size_t *) previous_break) = header_size + size;
+	previous_break = (void *)((char *)previous_break + header_size);
+	/* setting unused chunk */
+	if (unused_chunk <= (header_size + size))
+	{
+		sbrk((size_t) sysconf(_SC_PAGESIZE));
+		*((size_t *) ((char *)previous_break + size)) =
+		    unused_chunk + (size_t) sysconf(_SC_PAGESIZE) -
+		    header_size - size;
+	} else
+		*((size_t *) ((char *)previous_break + size)) =
+		    unused_chunk - header_size - size;
 	no_chunks++;
 	return (previous_break);
 }

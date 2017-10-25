@@ -6,6 +6,10 @@
 ## Development details
 The project concepts are explored with examples in EYNTK folder
 
+* malloc.h - includes all the library functions and user-defined ones
+
+* naive_malloc.c - Basic naive_malloc which returns a pointer to the allocated memory that is suitably aligned for any kind of variable
+
 
 # Useful Resources:
 
