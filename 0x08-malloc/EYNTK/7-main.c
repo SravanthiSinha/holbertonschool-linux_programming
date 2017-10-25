@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
-void *naive_malloc_align(size_t size);
+void *naive_malloc(size_t size);
 
 /**
  * main - Program entry point
@@ -21,7 +21,7 @@ int main(void)
 	{
 		void *chunk;
 
-		str = naive_malloc_align(10);
+		str = naive_malloc(10);
 		strcpy(str, "Holberton");
 		str[21] = '\0';
 		printf("%p: %s, ", (void *)str, str);

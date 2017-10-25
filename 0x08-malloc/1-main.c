@@ -18,7 +18,7 @@ int main(void)
 {
 	struct rec *ptr_one;
 
-	ptr_one = (struct rec *)naive_malloc(sizeof(struct rec)); 
+	ptr_one = (struct rec *)_malloc(sizeof(struct rec));
 	ptr_one->i = 10;
 	ptr_one->PI = 3.14;
 	ptr_one->A = 'a';

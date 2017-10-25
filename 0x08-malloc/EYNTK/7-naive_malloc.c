@@ -1,4 +1,7 @@
-#include "malloc.h"
+#include <unistd.h>
+
+#define PAGE_SIZE ((size_t) sysconf(_SC_PAGESIZE))
+#define align8(x) (((((x) - 1) >> 2) << 2 )+ 8)
 
 static void *heap_start;
 
@@ -24,17 +27,18 @@ void *naive_malloc(size_t size)
 		previous_break = sbrk(unused_chunk);
 		if (previous_break == (void *)-1)
 			return (NULL);
-		*((size_t *) previous_break) = chunk ;	/*set used bytes */
-		*((size_t *)((char *)previous_break + chunk)) =
-		  unused_chunk - chunk; /* setting unused chunk */
+		*((size_t *) previous_break) = chunk;	/*set used bytes */
+		*((size_t *) ((char *)previous_break + chunk)) = unused_chunk - chunk;	/* setting unused chunk */
 		return ((void *)((char *)previous_break + header_size));
 	}
 	previous_break = heap_start;
-	do {
+	do
+	{
 		used_chunk = *((size_t *) previous_break);
 		previous_break = (void *)((char *)previous_break + used_chunk);
 		unused_chunk = *((size_t *) previous_break);
-	}	while (unused_chunk <= chunk);
+	}
+	while (unused_chunk <= chunk);
 	*((size_t *) previous_break) = chunk;
 	previous_break = (void *)((char *)previous_break + header_size);
 	if (unused_chunk <= chunk)
