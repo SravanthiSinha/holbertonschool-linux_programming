@@ -15,8 +15,9 @@ asm_putc:
 	push rsi		; procedure, in case they were used before
 	push rdi
 	push rdx
+	push rcx
 	;;prologue end
-	
+
 	add rsp, -1		; Increase the stack by 1 byte to store a char
 	mov [rsp], rdi		; Store the ascii value of input char c
 
@@ -30,13 +31,14 @@ asm_putc:
 end:
 	add rsp, 1		; Discard our local variable
 	mov rax, 0x1
-	
+
 	;; epilogue
-	pop rdx			; Restore used registers
+	pop rcx			; Restore used registers
+	pop rdx
 	pop rdi
 	pop rsi
 	mov rsp, rbp		; Restore previous stack frame
 	pop rbp
 	;;epilogue end
-	
+
 	ret			; Return from procedure
