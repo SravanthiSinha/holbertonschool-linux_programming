@@ -1,7 +1,7 @@
 #include <unistd.h>
 
 #define PAGE_SIZE ((size_t) sysconf(_SC_PAGESIZE))
-#define align8(x) (((((x) - 1) >> 2) << 2 )+ 8)
+#define align8(x) (x % 8) ? (x + (8 - x % 8)) : x
 
 static void *heap_start;
 

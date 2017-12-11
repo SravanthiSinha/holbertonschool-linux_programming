@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #define PAGE_SIZE ((size_t) sysconf(_SC_PAGESIZE))
-#define align8(x) (((((x) - 1) >> 2) << 2) + 8)
+#define align8(x) ((x % 8) ? (x + (8 - x % 8)) : x)
 
 typedef struct s_block *t_block;
 
@@ -13,15 +13,11 @@ typedef struct s_block *t_block;
 * struct s_block - Holds the details of each block
 * @size: size of block
 * @next: pointer to next block
-* @free: 1 if block is free else 0
-* @data: data stored at the block
 */
 struct s_block
 {
 	size_t size;
-	t_block next;
-	int free;
-	char data[1];
+	struct s_block *next;
 };
 
 #define BLOCK_SIZE sizeof(struct s_block)
