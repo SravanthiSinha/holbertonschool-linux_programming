@@ -11,20 +11,20 @@ asm_strchr:
 	push rbp		; Set up stack frame
 	mov rbp, rsp
 	;;prologue end
+	mov rax, rdi
 
 	;loop_str - while loop
 loop_str:
-	cmp [rdi],  sil		; (*s != c)
-	je loopend
-	add rdi, 1		; Increment the first string *s++;
-	cmp [rdi], byte 0 	; (*s == '\0')
+	cmp byte [rax],  sil	; (*s != c)
+	je end
+	cmp byte [rax], byte 0 	; (*s == '\0')
 	je nullend
+	inc rax			; Increment the first string *s++;
 	jmp loop_str
-loopend:
-	mov rax, rdi
-	jmp end
+
 nullend:
 	mov rax, 0x0
+
 end:
 	;;epilogue
 	mov rsp, rbp		; Restore previous stack frame

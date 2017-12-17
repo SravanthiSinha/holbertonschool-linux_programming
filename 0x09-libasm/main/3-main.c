@@ -9,6 +9,7 @@
 #define C1  'n'
 #define C2  'S'
 #define C3  's'
+#define C4  '\0'
 
 /**
  * main - Program entry point
@@ -20,6 +21,7 @@ int main(void)
 	assert(strchr(S1, C1) == asm_strchr(S1, C1));
 	assert(strchr(S1, C2) == asm_strchr(S1, C2));
 	assert(strchr(S1, C3) == asm_strchr(S1, C3));
+	assert(strchr(S1, C4) == asm_strchr(S1, C4));
 
 	printf("All good!\n");
 	return (EXIT_SUCCESS);
