@@ -1,48 +1,22 @@
 BITS 64
-	EXTERN asm_strlen 	; IMPORT out 'asm_strlen' function
 
 	global asm_puts 	; EXPORT our 'asm_puts' function
+	EXTERN asm_strlen 	; IMPORT out 'asm_strlen' function
         section .text
 
         ; size_t asm_puts(const char *str);
-        ; Prints the lowercase alphabet
+        ; Prints the string
 
 asm_puts:
-	;; prologue
-        push rbp                ; Setup stack frame
-        mov rbp, rsp
-        push rsi		; Save registers that are gonna be used in this
-        push rdi                ; procedure, in case they were used before
-        push rdx
-        push r14
-	;;  prologue end
+	push rbp		; Setup stack frame
+	mov rbp, rsp
 	
-        call asm_strlen
-        mov r14, rax
-        mov r13, rdi
-
-loop_str:
-        cmp [r13], byte 0
-        je end
-
-        ; Setup 'write' syscall
-        mov rax, 1              ; Write syscall
-	mov rdi, 1              ; write to stdout
-	mov rdx, 1              ; Write 1 byte
-	mov rsi, r13            ; Address of the character to be printed
+	call asm_strlen		; Call asm_strlen to measure the string length
+	mov edx, eax		; Use the length of the string as 3rd arg to write syscall
+	mov esi, edi		; 2nd arg is the string
+	mov edi, 1		; 1st arg is the file descriptor to write to (1 for STDOUT)
+	mov eax, 1		; eax carries the syscall number (1 for write)
 	syscall
-	add r13, 1
-	jmp loop_str
-end:
-	mov rax, r14
-
-	;; epilogue
-	pop r14			; Restore used registers
-	pop rdx
-	pop rdi
-	pop rsi
-	mov rsp, rbp
+	mov rsp, rbp 		; Restore previous stack frame
 	pop rbp
-	;; epilogue end
-
-	ret
+	ret			; Return
