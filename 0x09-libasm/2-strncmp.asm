@@ -21,15 +21,15 @@ asm_strncmp:
 
 	;loop_str - while loop
 loop_str:
-	mov r15b, [rdi] 	; c1 = *s1;
-	mov r14b, [rsi]  	; c2 = *s2;
+	mov r15b, byte [rdi] 	; c1 = *s1;
+	mov r14b, byte [rsi]  	; c2 = *s2;
 	add rdi, 1		; Increment the first string *s1++;
 	add rsi, 1		; Increment the second string *s2++;
 	cmp rcx,  0		; (count > 0)
 	jle eq
 	cmp r15b, r14b		; (c1 != c2)
 	jne loopend
-	cmp [rsi], byte 0 	; (!c1)
+	cmp r15b, byte 0 	; (!c1)
 	je eq
 	sub rcx, 1;
 	jmp loop_str
