@@ -4,13 +4,13 @@ BITS 64
         section .text
 	; size_t asm_puti(int n);
         ; Prints the lowercase alphabet
+
 asm_puti:
 	;; prologue
         push rbp                ; Setup stack frame
         mov rbp, rsp
-                                ; Save registers that are gonna be used in this
-        push rsi                ; procedure, in case they were used before
-        push rdi
+        push rsi 		;Save registers that are gonna be used in this
+        push rdi                ; procedure, in case they were used before
         push rdx
         push r13
 	push r14
@@ -57,12 +57,12 @@ asm_puti:
 		jmp loop
 	end:
 		mov rax, rsi
-	
+
 	;; epilogue
 	pop r8
 	pop r14
 	pop r13
-	pop rdx ; Restore used registers
+	pop rdx		; Restore used registers
 	pop rdi
 	pop rsi
 	mov rsp, rbp
