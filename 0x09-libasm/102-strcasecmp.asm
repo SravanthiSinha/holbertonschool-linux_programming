@@ -45,7 +45,7 @@ end2:
 
 	cmp r15b, r14b		; (c1 != c2)
 	jne loopend
-	cmp [rsi], byte 0 	; (!c1)
+	cmp r15b, byte 0 	; (!c1)
 	je eq
 	jmp loop_str
 loopend:
