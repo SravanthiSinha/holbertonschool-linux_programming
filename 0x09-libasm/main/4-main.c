@@ -8,6 +8,7 @@
 #define S1  "Holberton School"
 #define S2  "School"
 #define S3  "Socool"
+#define S4  ""
 
 /**
 char* asm_strstr(const char *str, sonst char *substr)
@@ -19,7 +20,7 @@ char* asm_strstr(const char *str, sonst char *substr)
 
 		    // If first character of sub string match, check for whole string
 		    while (*str && *pattern && *str == *pattern)
-			{
+			  {
 			      str++;
 			      pattern++;
 		    }
@@ -41,7 +42,10 @@ int main(void)
 {
 	assert(strstr(S1, S2) == asm_strstr(S1, S2));
 	assert(strstr(S1, S3) == asm_strstr(S1, S3));
+	assert(strstr(S1, S4) == asm_strstr(S1, S4));
 	assert(strstr(S1, S1) == asm_strstr(S1, S1));
+	assert(strstr(S4, S4) == asm_strstr(S4, S4));
+	assert(strstr(S4, S1) == asm_strstr(S4, S1));
 
 	printf("All good!\n");
 	return (EXIT_SUCCESS);

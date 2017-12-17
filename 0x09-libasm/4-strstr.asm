@@ -18,9 +18,13 @@ asm_strstr:
 	mov r15b, 0		; variable char *str
 	mov r14b, 0		; variable char *substr
 	mov r13b, 0
+
+	cmp [rsi], byte 0 	;  if (!*str)
+	mov r15, rdi
+	je end
 	;loop_str - while loop
 loop_str:
-	cmp [rdi], byte 0 	;  while (*str)
+	cmp [rdi], byte 0 	;  while (!*str)
 	je nullend
 	mov r15, rdi 		; *Begin = *str;
 	mov r14, rsi  		; *pattern = *substr;
