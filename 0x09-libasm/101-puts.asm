@@ -4,13 +4,13 @@ BITS 64
 	EXTERN asm_strlen 	; IMPORT out 'asm_strlen' function
         section .text
 
-        ; size_t asm_puts(const char *str);
+        ; size_t asm_puts(const char *str)
         ; Prints the string
 
 asm_puts:
 	push rbp		; Setup stack frame
 	mov rbp, rsp
-	
+
 	call asm_strlen		; Call asm_strlen to measure the string length
 	mov edx, eax		; Use the length of the string as 3rd arg to write syscall
 	mov esi, edi		; 2nd arg is the string
