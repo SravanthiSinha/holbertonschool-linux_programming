@@ -14,3 +14,17 @@
   * L10 - Sorting the list. Example: holberton.sort()
   * L11 - Reversing the list. Example: holberton.reverse()
   * L12 - Deleting the list. Example: del holberton
+
+
+* 1-python.c - prints basic info about python lists
+
+
+## Useful Links:
+
+* [listobject.h](https://github.com/python/cpython/blob/master/Include/listobject.h)
+
+* [object.h](https://github.com/python/cpython/blob/master/Include/object.h)
+
+* [Common Object Structures](https://docs.python.org/3.4/c-api/structures.html)
+
+* [List Objects](https://docs.python.org/3.4/c-api/list.html)
