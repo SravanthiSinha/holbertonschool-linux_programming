@@ -16,15 +16,22 @@
   * L12 - Deleting the list. Example: del holberton
 
 
-* 1-python.c - prints basic info about python lists
+* 1-python.c - C functions that print some basic info about Python lists.
 
+* 2-python-c - C functions that print some basic info about Python lists, Python bytes.
+
+* 3-python-c - C functions that print some basic info about Python lists, Python bytes ans Python float objects.
 
 ## Useful Links:
 
-* [listobject.h](https://github.com/python/cpython/blob/master/Include/listobject.h)
+* [listobject.h](/usr/include/python3.4/listobject.h)
 
-* [object.h](https://github.com/python/cpython/blob/master/Include/object.h)
+* [object.h](/usr/include/python3.4/object.h)
 
 * [Common Object Structures](https://docs.python.org/3.4/c-api/structures.html)
 
 * [List Objects](https://docs.python.org/3.4/c-api/list.html)
+
+* [Byte Object](/usr/include/python3.4/bytesobject.h)
+
+* [Float Object](/usr/include/python3.4/floatobject.h)
