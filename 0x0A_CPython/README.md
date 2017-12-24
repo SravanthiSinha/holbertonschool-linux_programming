@@ -22,6 +22,10 @@
 
 * 3-python-c - C functions that print some basic info about Python lists, Python bytes ans Python float objects.
 
+* 4-python-c - C functions that print Python strings.
+
+* 5-python-c - C functions that print Python Integers.
+
 ## Useful Links:
 
 * [listobject.h](/usr/include/python3.4/listobject.h)
@@ -35,3 +39,9 @@
 * [Byte Object](/usr/include/python3.4/bytesobject.h)
 
 * [Float Object](/usr/include/python3.4/floatobject.h)
+
+* [Unicode](https://docs.python.org/3/c-api/unicode.html)
+
+* [Long Integer Object](/usr/include/python3.4/longintrepr.h)
+
+* [String conversion and formatting](https://docs.python.org/3/c-api/conversion.html)
