@@ -1,7 +1,7 @@
 # 0x0B. C - Strace
 ### System programming & Algorithm ― Linux programming
 
-* strace_0.c -  A program that executes and traces a given command.
+* strace_0.c -  A program that executes and traces a given command. Each time a syscall is intercepted, it prints its number, followed by a new line
 
 Usage: ./strace_0 command [args...]
 
@@ -77,5 +77,58 @@ Holberton
 3
 231
 $
+```
+
+* strace_1.c -  A program that executes and traces a given command. Each time a syscall is intercepted, it prints its name, followed by a new line
+
+Usage: ./strace_1 command [args...]
 
 ```
+$make strace_1
+[...]
+$./strace_1 /bin/echo Holberton
+execve
+brk
+access
+mmap
+access
+open
+fstat
+mmap
+close
+access
+open
+read
+fstat
+mmap
+mprotect
+mmap
+mmap
+close
+mmap
+mmap
+arch_prctl
+mprotect
+mprotect
+mprotect
+munmap
+brk
+brk
+open
+fstat
+mmap
+close
+fstat
+mmap
+write
+Holberton
+close
+munmap
+close
+exit_group
+$
+```
+
+## Resources:
+
+* [syscalls](https://filippo.io/linux-syscall-table/)
