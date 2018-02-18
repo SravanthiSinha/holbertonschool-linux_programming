@@ -3,6 +3,12 @@
 #include <sys/ptrace.h>
 #include <stdio.h>
 
+/**
+ * main - Starts the program
+ * @argc : no of command line arguments
+ * @argv: command line arguments
+ * Return: on success - 0, on failure - 1
+ */
 int main(int __attribute__ ((unused)) argc, char **argv)
 {
 	pid_t child_pid;

@@ -178,6 +178,13 @@ close = 0
 exit_group = ?
 $
 ```
+
+
+* strace_3.c -  A program that executes and traces a given command. Each time a syscall is intercepted, prints its name , its parameters in hexadecimal, and its return value in hexadecimal, followed by a new line
+
+Usage: ./strace_3 command [args...]
+
+
 ## Resources:
 
 * [syscalls](https://filippo.io/linux-syscall-table/)

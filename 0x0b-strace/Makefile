@@ -1,5 +1,5 @@
-# CC 	= 	gcc-4.8
-# CFLAGS 	= 	-Wall -Werror -Wextra -pedantic -g
+CC 	= 	gcc-4.8
+CFLAGS 	= 	-Wall -Werror -Wextra -pedantic -g
 
 _SRC 	= 	strace_0.c
 
@@ -15,13 +15,21 @@ SRC1 	= 	$(patsubst %,$(SDIR)/%,$(_SRC1))
 _OBJ1 	= 	$(_SRC1:.c=.o)
 OBJECTS1 	= 	$(patsubst %,$(ODIR)/%,$(_OBJ1))
 
-_SRC2 	= 	strace_2.c
+_SRC2 	= 	strace_2.c \
+						utils.c
 
 SRC2 	= 	$(patsubst %,$(SDIR)/%,$(_SRC2))
 
 _OBJ2 	= 	$(_SRC2:.c=.o)
 OBJECTS2 	= 	$(patsubst %,$(ODIR)/%,$(_OBJ2))
 
+_SRC3 	= 	strace_3.c	\
+						utils.c
+
+SRC3 	= 	$(patsubst %,$(SDIR)/%,$(_SRC3))
+
+_OBJ3 	= 	$(_SRC3:.c=.o)
+OBJECTS3 	= 	$(patsubst %,$(ODIR)/%,$(_OBJ3))
 
 _DEPS 	=	strace.h
 DEPS 	= 	$(patsubst %,$(IDIR)/%,$(_DEPS))
@@ -33,11 +41,12 @@ ODIR 	= 	.
 OUTPUT 	= 	strace_0
 OUTPUT1 	= 	strace_1
 OUTPUT2 	= 	strace_2
+OUTPUT3 	= 	strace_3
 
 $(ODIR)/%.o : $(SDIR)/%.c
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(IDIR)
 
-all : $(OUTPUT) $(OUTPUT1) $(OUTPUT2)
+all : $(OUTPUT) $(OUTPUT1) $(OUTPUT2) $(OUTPUT3)
 
 $(OUTPUT) : $(OBJECTS)
 	$(CC) -o $@ $^ $(LINKS)
@@ -48,9 +57,12 @@ $(OUTPUT1) : $(OBJECTS1)
 $(OUTPUT2) : $(OBJECTS2)
 	$(CC) -o $@ $^ $(LINKS)
 
+$(OUTPUT3) : $(OBJECTS3)
+	$(CC) -o $@ $^ $(LINKS)
+
 .PHONY : clean
 
 clean :
-	rm -f $(OUTPUT) $(OBJECTS) $(OUTPUT1) $(OBJECTS1) $(OUTPUT2) $(OBJECTS2)
+	rm -f $(OUTPUT) $(OBJECTS) $(OUTPUT1) $(OBJECTS1) $(OUTPUT2) $(OBJECTS2) $(OUTPUT3) $(OBJECTS3)
 
-re: $(OBJ) $(OBJ1) $(OBJ2)
+re: $(OBJ) $(OBJ1) $(OBJ2) $(OBJ3)

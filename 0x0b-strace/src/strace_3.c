@@ -33,8 +33,42 @@ int wait_for_syscall(pid_t child_pid)
 			return (0);
 		if (WIFEXITED(status))
 		{
-			printf(" = ?\n");
+			printf(") = ?\n");
 			return (1);
+		}
+	}
+}
+
+/**
+ * print_syscall_args - prints values of parameters or arguments passed to
+ * syscall in hexadecimal
+ * @regs: structure containing registers info
+ **/
+void print_syscall_args(struct user_regs_struct regs)
+{
+	int nargs = 0, i = 0;
+	unsigned long arg;
+	bool is_varargs = false;
+
+	nargs = syscalls_64_g[(size_t) regs.orig_rax].nb_params;
+	for (i = 0; i < nargs; i++)
+	{
+		arg = get_syscall_arg(regs, i);
+
+		if (syscalls_64_g[(size_t) regs.orig_rax].params[i] == VARARGS)
+			is_varargs = true;
+		if (i == 0)
+		{
+			if (is_varargs)
+				printf("...");
+			else
+				printf("%#lx", arg);
+		} else
+		{
+			if (is_varargs)
+				printf(", ...");
+			else
+				printf(", %#lx", arg);
 		}
 	}
 }
@@ -59,16 +93,17 @@ void run_tracer(pid_t child_pid)
 			break;
 		ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
 		if (arch_32)
-			printf("%s",
+			printf("%s(",
 			       syscalls_32_g[(size_t) regs.orig_rax].name);
 		else
-			printf("%s",
+			printf("%s(",
 			       syscalls_64_g[(size_t) regs.orig_rax].name);
+		print_syscall_args(regs);
 		fflush(stdout);
 		if (wait_for_syscall(child_pid) != 0)
 			break;
 		ptrace(PTRACE_GETREGS, child_pid, 0, &regs);
-		printf(" = %#lx\n", (unsigned long)regs.rax);
+		printf(") = %#lx\n", (unsigned long)regs.rax);
 	}
 }
 
