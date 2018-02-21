@@ -277,6 +277,28 @@ munmap(0x7f92c4de1000, 0x1000) = 0
 close(0x2) = 0
 exit_group(0) = ?
 ```
+
+* strace_5.c -  A program that executes and traces a given command. Each time a syscall is intercepted, prints its name, arguments and return values, followed by a new line
+
+  Note: Handles only following type of parameters
+  - int
+  - long
+  - size_t
+  - ssize_t
+  - u64
+  - uint32_t
+  - unsigned int
+  - unsigned long
+  - pid_t
+
+  
+  Usage: ./strace_5 command [args...]
+
+```
+$make strace_5
+[...]
+$./strace_5 /bin/echo Holberton
+```
 ## Resources:
 
 * [syscalls](https://filippo.io/linux-syscall-table/)

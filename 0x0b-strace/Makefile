@@ -39,6 +39,14 @@ SRC4 	= 	$(patsubst %,$(SDIR)/%,$(_SRC4))
 _OBJ4 	= 	$(_SRC4:.c=.o)
 OBJECTS4 	= 	$(patsubst %,$(ODIR)/%,$(_OBJ4))
 
+_SRC5 	= 	strace_5.c	\
+						utils.c
+
+SRC5 	= 	$(patsubst %,$(SDIR)/%,$(_SRC5))
+
+_OBJ5 	= 	$(_SRC5:.c=.o)
+OBJECTS5 	= 	$(patsubst %,$(ODIR)/%,$(_OBJ5))
+
 _DEPS 	=	strace.h
 DEPS 	= 	$(patsubst %,$(IDIR)/%,$(_DEPS))
 
@@ -51,11 +59,12 @@ OUTPUT1 	= 	strace_1
 OUTPUT2 	= 	strace_2
 OUTPUT3 	= 	strace_3
 OUTPUT4 	= 	strace_4
+OUTPUT5 	= 	strace_5
 
 $(ODIR)/%.o : $(SDIR)/%.c
 	$(CC) $(CFLAGS) -c -o $@ $< -I$(IDIR)
 
-all : $(OUTPUT) $(OUTPUT1) $(OUTPUT2) $(OUTPUT3) $(OUTPUT4)
+all : $(OUTPUT) $(OUTPUT1) $(OUTPUT2) $(OUTPUT3) $(OUTPUT4) $(OUTPUT5)
 
 $(OUTPUT) : $(OBJECTS)
 	$(CC) -o $@ $^ $(LINKS)
@@ -72,9 +81,12 @@ $(OUTPUT3) : $(OBJECTS3)
 $(OUTPUT4) : $(OBJECTS4)
 	$(CC) -o $@ $^ $(LINKS)
 
+$(OUTPUT5) : $(OBJECTS5)
+	$(CC) -o $@ $^ $(LINKS)
+
 .PHONY : clean
 
 clean :
-	rm -f $(OUTPUT) $(OBJECTS) $(OUTPUT1) $(OBJECTS1) $(OUTPUT2) $(OBJECTS2) $(OUTPUT3) $(OBJECTS3) $(OUTPUT4) $(OBJECTS4)
+	rm -f $(OUTPUT) $(OBJECTS) $(OUTPUT1) $(OBJECTS1) $(OUTPUT2) $(OBJECTS2) $(OUTPUT3) $(OBJECTS3) $(OUTPUT4) $(OBJECTS4) $(OUTPUT5) $(OBJECTS5)
 
-re: $(OBJ) $(OBJ1) $(OBJ2) $(OBJ3) $(OBJ4)
+re: $(OBJ) $(OBJ1) $(OBJ2) $(OBJ3) $(OBJ4) $(OBJ5)

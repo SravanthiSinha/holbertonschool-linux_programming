@@ -7,6 +7,7 @@
 #include <sys/ptrace.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <errno.h>
 #include <sys/utsname.h>
 #include <sys/user.h>
@@ -30,4 +31,5 @@ typedef int bool;
 bool is_machine_32(void);
 unsigned long get_syscall_arg(struct user_regs_struct regs, int n);
 char *read_string(pid_t child, unsigned long addr);
+void print_arg(unsigned long arg, type_t arg_type);
 #endif

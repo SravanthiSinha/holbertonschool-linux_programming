@@ -105,3 +105,45 @@ char *read_string(pid_t child_pid, unsigned long addr)
 	}
 	return (str);
 }
+
+/**
+ * print_arg - prints the argument based on its type
+ * @arg: argument to be printed
+ * @arg_type: type of the argument
+ */
+void print_arg(unsigned long arg, type_t arg_type)
+{
+	switch (arg_type)
+	{
+	case INT:
+		printf("%d", (int)arg);
+		break;
+	case LONG:
+		printf("%ld", (long)arg);
+		break;
+	case SIZE_T:
+		printf("%ld", (size_t) arg);
+		break;
+	case SSIZE_T:
+		printf("%ld", (ssize_t) arg);
+		break;
+	case U64:
+		printf("%lu", (unsigned long)arg);
+		break;
+	case UINT32_T:
+		printf("%d", (uint32_t) arg);
+		break;
+	case UNSIGNED_INT:
+		printf("%du", (unsigned int)arg);
+		break;
+	case UNSIGNED_LONG:
+		printf("%lu", (unsigned long)arg);
+		break;
+	case PID_T:
+		printf("%d", (pid_t) arg);
+		break;
+	default:
+		printf("%#lx", arg);
+		break;
+	}
+}
