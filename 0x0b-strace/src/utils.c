@@ -1,7 +1,7 @@
 #include "strace.h"
 
 /**
- * is_machine_32 - evaluates if machine is 32 or 64 bit
+ * is_machine_32 - estruates if machine is 32 or 64 bit
  * Return: true if 32, else false
  */
 bool is_machine_32(void)
@@ -20,7 +20,6 @@ bool is_machine_32(void)
 		return (true);
 	return (false);
 }
-
 
 /**
  * get_syscall_arg - fetches the parameter to the syscall
@@ -62,4 +61,47 @@ unsigned long get_syscall_arg(struct user_regs_struct regs, int n)
 	default:
 		return (-1L);
 	}
+}
+
+/**
+ * read_string - Returns the string stored in the memory @addr
+ * @child_pid: pid of the process
+ * @addr: address to be looked in
+ * Return: string stored in memory
+ */
+char *read_string(pid_t child_pid, unsigned long addr)
+{
+
+	/*
+	 *points to the beginning of the memory, which is used later to read
+	 *the string
+	 */
+	char *str = malloc(4096);
+	unsigned int allocated = 4096;
+	unsigned long read = 0;
+	unsigned long tmp;
+
+	while (1)
+	{
+		/**
+		 *Since ptrace() reads and returns only 8 bytes at a time,
+		 *we need to do this iteratively
+		 */
+		if (read + sizeof(tmp) > allocated)
+		{
+			allocated *= 2;
+			str = realloc(str, allocated);
+		}
+		tmp = ptrace(PTRACE_PEEKDATA, child_pid, addr + read);
+		if (errno != 0)
+		{
+			str[read] = 0;
+			break;
+		}
+		memcpy(str + read, &tmp, sizeof(tmp));
+		if (memchr(&tmp, 0, sizeof(tmp)) != NULL)
+			break;
+		read += sizeof(tmp);
+	}
+	return (str);
 }

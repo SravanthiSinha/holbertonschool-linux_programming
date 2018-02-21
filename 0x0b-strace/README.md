@@ -228,6 +228,55 @@ munmap(0x7f8b6214f000, 0x1000) = 0
 close(0x2) = 0
 exit_group(0) = ?
 ```
+
+* strace_4.c -  A program that executes and traces a given command. Each time a syscall is intercepted, prints its name, char * parameters , other s in hexadecimal and its return value in hexadecimal, followed by a new line
+
+  Usage: ./strace_4 command [args...]
+
+```
+$make strace_4
+[...]
+$./strace_4 /bin/echo Holberton
+execve("/bin/echo", ["/bin/echo", "Holberton"], [/* 75 vars */]) = 0
+brk(0) = 0xce3000
+access("/etc/ld.so.nohwcap", 0) = 0xfffffffffffffffe
+mmap(0, 0x2000, 0x3, 0x22, 0xffffffff, 0) = 0x7f92c4de2000
+access("/etc/ld.so.preload", 0x4) = 0xfffffffffffffffe
+open("/etc/ld.so.cache", 0x80000) = 0x3
+fstat(0x3, 0x7fff2ef1fef0) = 0
+mmap(0, 0x173e6, 0x1, 0x2, 0x3, 0) = 0x7f92c4dca000
+close(0x3) = 0
+access("/etc/ld.so.nohwcap", 0) = 0xfffffffffffffffe
+open("/lib/x86_64-linux-gnu/libc.so.6", 0x80000) = 0x3
+read(0x3, 0x7fff2ef20090, 0x340) = 0x340
+fstat(0x3, 0x7fff2ef1ff40) = 0
+mmap(0, 0x3c82c0, 0x5, 0x802, 0x3, 0) = 0x7f92c47f9000
+mprotect(0x7f92c49b7000, 0x200000, 0) = 0
+mmap(0x7f92c4bb7000, 0x6000, 0x3, 0x812, 0x3, 0x1be000) = 0x7f92c4bb7000
+mmap(0x7f92c4bbd000, 0x42c0, 0x3, 0x32, 0xffffffff, 0) = 0x7f92c4bbd000
+close(0x3) = 0
+mmap(0, 0x1000, 0x3, 0x22, 0xffffffff, 0) = 0x7f92c4dc9000
+mmap(0, 0x2000, 0x3, 0x22, 0xffffffff, 0) = 0x7f92c4dc7000
+arch_prctl(0x1002, 0x7f92c4dc7740) = 0
+mprotect(0x7f92c4bb7000, 0x4000, 0x1) = 0
+mprotect(0x606000, 0x1000, 0x1) = 0
+mprotect(0x7f92c4de4000, 0x1000, 0x1) = 0
+munmap(0x7f92c4dca000, 0x173e6) = 0
+brk(0) = 0xce3000
+brk(0xd04000) = 0xd04000
+open("/usr/lib/locale/locale-archive", 0x80000) = 0x3
+fstat(0x3, 0x7f92c4bbcb60) = 0
+mmap(0, 0x6e1e30, 0x1, 0x2, 0x3, 0) = 0x7f92c4117000
+close(0x3) = 0
+fstat(0x1, 0x7fff2ef20650) = 0
+mmap(0, 0x1000, 0x3, 0x22, 0xffffffff, 0) = 0x7f92c4de1000
+write(0x1, 0x7f92c4de1000, 0xaHolberton
+) = 0xa
+close(0x1) = 0
+munmap(0x7f92c4de1000, 0x1000) = 0
+close(0x2) = 0
+exit_group(0) = ?
+```
 ## Resources:
 
 * [syscalls](https://filippo.io/linux-syscall-table/)

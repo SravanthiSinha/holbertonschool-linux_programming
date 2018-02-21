@@ -29,4 +29,5 @@ typedef int bool;
 
 bool is_machine_32(void);
 unsigned long get_syscall_arg(struct user_regs_struct regs, int n);
+char *read_string(pid_t child, unsigned long addr);
 #endif

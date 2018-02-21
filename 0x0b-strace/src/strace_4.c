@@ -43,31 +43,63 @@ int wait_for_syscall(pid_t child_pid)
  * print_syscall_args - prints values of parameters or arguments passed to
  * syscall in hexadecimal
  * @regs: structure containing registers info
+ * @child_pid: pid of the tracee to be traced
+ * @argc : no of command line arguments
+ * @argv: command line arguments
+ * @envp: environment variables
  **/
-void print_syscall_args(struct user_regs_struct regs)
+void print_syscall_args(pid_t child_pid, int argc, char *const argv[],
+			char *const envp[], struct user_regs_struct regs)
 {
 	int nargs = 0, i = 0;
 	unsigned long arg;
 
 	nargs = syscalls_64_g[(size_t) regs.orig_rax].nb_params;
-	for (i = 0; i < nargs; i++)
+	if (strcmp(syscalls_64_g[(size_t) regs.orig_rax].name, "execve") == 0)
 	{
-		arg = get_syscall_arg(regs, i);
+		printf("\"%s\", [", argv[1]);
+		for (i = 1; i < argc; i++)
+		{
+			printf("\"%s\"", argv[i]);
+			if (i < argc - 1)
+				printf(", ");
+		}
+		printf("], ");
+		i = 0;
+		while (*envp++)
+			i++;
+		printf("[/* %d vars */]", i);
+	} else
+		for (i = 0; i < nargs; i++)
+		{
+			arg = get_syscall_arg(regs, i);
 
-		if (syscalls_64_g[(size_t) regs.orig_rax].params[i] == VARARGS)
-			printf("...");
-		else
-			printf("%#lx", arg);
-		if (i < nargs - 1)
-			printf(", ");
-	}
+			if (syscalls_64_g[(size_t) regs.orig_rax].params[i] ==
+			    VARARGS)
+				printf("...");
+			else
+			{
+				if (syscalls_64_g[(size_t) regs.orig_rax].params
+				    [i] == CHAR_P)
+					printf("\"%s\"",
+					       read_string(child_pid, arg));
+				else
+					printf("%#lx", arg);
+			}
+			if (i < nargs - 1)
+				printf(", ");
+		}
 }
 
 /**
  * run_tracer -  A function that runs a tracer
  * @child_pid: pid of the tracee to be traced
+ * @argc : no of command line arguments
+ * @argv: command line arguments
+ * @envp: environment variables
  */
-void run_tracer(pid_t child_pid)
+void run_tracer(pid_t child_pid, int argc, char *const argv[],
+		char *const envp[])
 {
 	int status;
 	struct user_regs_struct regs;
@@ -88,7 +120,7 @@ void run_tracer(pid_t child_pid)
 		else
 			printf("%s(",
 			       syscalls_64_g[(size_t) regs.orig_rax].name);
-		print_syscall_args(regs);
+		print_syscall_args(child_pid, argc, argv, envp, regs);
 		fflush(stdout);
 		if (wait_for_syscall(child_pid) != 0)
 			break;
@@ -118,7 +150,7 @@ int main(int argc, char *const argv[], char *const envp[])
 			run_tracee(argv + 1, envp);
 		} else if (child_pid > 0)
 		{
-			run_tracer(child_pid);
+			run_tracer(child_pid, argc, argv, envp);
 		} else
 		{
 			perror("fork failed");
