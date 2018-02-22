@@ -291,14 +291,110 @@ exit_group(0) = ?
   - unsigned long
   - pid_t
 
-  
+
   Usage: ./strace_5 command [args...]
 
 ```
 $make strace_5
 [...]
 $./strace_5 /bin/echo Holberton
+execve("/bin/echo", ["/bin/echo", "Holberton"], [/* 75 vars */]) = 0
+brk(0) = 27238400
+access("/etc/ld.so.nohwcap", 0) = -2
+mmap(0, 8192, 3, 34, -1, 0) = 0x7f8a29bf2000
+access("/etc/ld.so.preload", 4) = -2
+open("/etc/ld.so.cache", 524288) = 3
+fstat(3, 0x7ffe44a07da0) = 0
+mmap(0, 95206, 1, 2, 3, 0) = 0x7f8a29bda000
+close(3) = 0
+access("/etc/ld.so.nohwcap", 0) = -2
+open("/lib/x86_64-linux-gnu/libc.so.6", 524288) = 3
+read(3, 0x7ffe44a07f40, 832) = 832
+fstat(3, 0x7ffe44a07df0) = 0
+mmap(0, 3965632, 5, 2050, 3, 0) = 0x7f8a29609000
+mprotect(0x7f8a297c7000, 2097152, 0) = 0
+mmap(0x7f8a299c7000, 24576, 3, 2066, 3, 0x1be000) = 0x7f8a299c7000
+mmap(0x7f8a299cd000, 17088, 3, 50, -1, 0) = 0x7f8a299cd000
+close(3) = 0
+mmap(0, 4096, 3, 34, -1, 0) = 0x7f8a29bd9000
+mmap(0, 8192, 3, 34, -1, 0) = 0x7f8a29bd7000
+arch_prctl(4098, 140231382497088) = 0
+mprotect(0x7f8a299c7000, 16384, 1) = 0
+mprotect(0x606000, 4096, 1) = 0
+mprotect(0x7f8a29bf4000, 4096, 1) = 0
+munmap(0x7f8a29bda000, 95206) = 0
+brk(0) = 27238400
+brk(0x1a1b000) = 27373568
+open("/usr/lib/locale/locale-archive", 524288) = 3
+fstat(3, 0x7f8a299ccb60) = 0
+mmap(0, 7216688, 1, 2, 3, 0) = 0x7f8a28f27000
+close(3) = 0
+fstat(1, 0x7ffe44a08500) = 0
+mmap(0, 4096, 3, 34, -1, 0) = 0x7f8a29bf1000
+write(1, 0x7f8a29bf1000, 10Holberton
+) = 10
+close(1) = 0
+munmap(0x7f8a29bf1000, 4096) = 0
+close(2) = 0
+exit_group(0) = ?
+$
 ```
+
+* strace_6.c -  A program that executes and traces a given command. Each time a syscall is intercepted, prints its name, arguments and return values, followed by a new line
+
+  Note: Handles only following macros and flags
+  - NULL
+  - All the flags for the mmap, open and access functions
+
+  Usage: ./strace_6 command [args...]
+
+```
+$make strace_6
+[...]
+$./strace_6 /bin/echo Holberton
+execve("/bin/echo", ["/bin/echo", "Holberton"], [/* 75 vars */]) = 0
+brk(0) = 23924736
+access("/etc/ld.so.nohwcap", F_OK) = -2
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f6d10c76000
+access("/etc/ld.so.preload", R_OK) = -2
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, 0x7ffd6f887a30) = 0
+mmap(NULL, 95206, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f6d10c5e000
+close(3) = 0
+access("/etc/ld.so.nohwcap", F_OK) = -2
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, 0x7ffd6f887bd0, 832) = 832
+fstat(3, 0x7ffd6f887a80) = 0
+mmap(NULL, 3965632, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f6d1068d000
+mprotect(0x7f6d1084b000, 2097152, 0) = 0
+mmap(0x7f6d10a4b000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1be000) = 0x7f6d10a4b000
+mmap(0x7f6d10a51000, 17088, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f6d10a51000
+close(3) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f6d10c5d000
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f6d10c5b000
+arch_prctl(4098, 140106409555776) = 0
+mprotect(0x7f6d10a4b000, 16384, 1) = 0
+mprotect(0x606000, 4096, 1) = 0
+mprotect(0x7f6d10c78000, 4096, 1) = 0
+munmap(0x7f6d10c5e000, 95206) = 0
+brk(0) = 23924736
+brk(0x16f2000) = 24059904
+open("/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, 0x7f6d10a50b60) = 0
+mmap(NULL, 7216688, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f6d0ffab000
+close(3) = 0
+fstat(1, 0x7ffd6f888190) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f6d10c75000
+write(1, 0x7f6d10c75000, 10Holberton
+) = 10
+close(1) = 0
+munmap(0x7f6d10c75000, 4096) = 0
+close(2) = 0
+exit_group(0) = ?
+$
+```
+
+
 ## Resources:
 
 * [syscalls](https://filippo.io/linux-syscall-table/)

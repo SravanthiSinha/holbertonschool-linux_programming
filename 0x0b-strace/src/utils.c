@@ -110,8 +110,9 @@ char *read_string(pid_t child_pid, unsigned long addr)
  * print_arg - prints the argument based on its type
  * @arg: argument to be printed
  * @arg_type: type of the argument
+ * @deal_null: To reolve NULL
  */
-void print_arg(unsigned long arg, type_t arg_type)
+void print_arg(unsigned long arg, type_t arg_type, bool deal_null)
 {
 	switch (arg_type)
 	{
@@ -143,7 +144,10 @@ void print_arg(unsigned long arg, type_t arg_type)
 		printf("%d", (pid_t) arg);
 		break;
 	default:
-		printf("%#lx", arg);
+		if (deal_null && !arg)
+			printf("NULL");
+		else
+			printf("%#lx", arg);
 		break;
 	}
 }

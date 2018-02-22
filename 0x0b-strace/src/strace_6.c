@@ -52,10 +52,14 @@ void print_syscall_args(pid_t child_pid, int argc, char *const argv[],
 			char *const envp[], struct user_regs_struct regs)
 {
 	int nargs = 0, i = 0;
-	unsigned long arg;
+	unsigned long arg, syscall;
+	bool deal_null = false;
+	const char *name;
 
-	nargs = syscalls_64_g[(size_t) regs.orig_rax].nb_params;
-	if (strcmp(syscalls_64_g[(size_t) regs.orig_rax].name, "execve") == 0)
+	syscall = (size_t) regs.orig_rax;
+	nargs = syscalls_64_g[syscall].nb_params;
+	name = syscalls_64_g[syscall].name;
+	if (strcmp(name, "execve") == 0)
 	{
 		printf("\"%s\", [", argv[1]);
 		for (i = 1; i < argc; i++)
@@ -73,16 +77,17 @@ void print_syscall_args(pid_t child_pid, int argc, char *const argv[],
 		for (i = 0; i < nargs; i++)
 		{
 			arg = get_syscall_arg(regs, i);
-
-			if (syscalls_64_g[(size_t) regs.orig_rax].params[i] == VARARGS)
+			deal_null = (syscalls_64_g[syscall].params[i] == VOID_P
+				     && strcmp(name, "brk")) ? true : false;
+			if (syscalls_64_g[syscall].params[i] == VARARGS)
 				printf("...");
+			else if (syscalls_64_g[syscall].params[i] == CHAR_P)
+				printf("\"%s\"", read_string(child_pid, arg));
+			else if (!strcmp(name, "access") || !strcmp(name, "open")
+				 || (!strcmp(name, "mmap") && i >= 2 && i <= 3))
+				handle_syscall_macros(name, arg, i);
 			else
-			{
-				if (syscalls_64_g[(size_t) regs.orig_rax].params[i] == CHAR_P)
-					printf("\"%s\"", read_string(child_pid, arg));
-				else
-					print_arg(arg, syscalls_64_g[(size_t)regs.orig_rax].params[i], false);
-			}
+				print_arg(arg, syscalls_64_g[syscall].params[i], deal_null);
 			if (i < nargs - 1)
 				printf(", ");
 		}
